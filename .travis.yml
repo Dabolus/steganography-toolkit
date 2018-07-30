@@ -16,8 +16,5 @@ script:
 - yarn run lint
 - yarn run build
 after_success:
-- eval "$(ssh-agent -s)"
-- chmod 600 .travis/deploy_key.pem
-- ssh-add .travis/deploy_key.pem
 - git remote add deploy ${GIT_URL}
-- git push deploy
+- git push deploy master
