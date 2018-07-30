@@ -16,5 +16,10 @@ script:
 - yarn run lint
 - yarn run build
 after_success:
-- git remote add deploy ${GIT_URL}
-- git push deploy master
+- shopt -s extglob # enable extended globbing
+- echo rm -rf !(build) # remove everything but the build directory
+- mv build steganography-toolkit # rename the build directory to steganography-toolkit
+- git clone ${GIT_URL} # clone the repo
+- git add steganography-toolkit # add steganography-toolkit to the repo
+- git commit --allow-empty-message -m ''
+- git push origin master
