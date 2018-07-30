@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>My app</title>
-    <meta name="description" content="My App description">
-    <base href="/">
+    <title>Steganography Toolkit</title>
+    <meta name="description" content="Steganography Toolkit">
+    <base href="{{htmlWebpackPlugin.options.base}}">
 
     <style>
       @font-face {
@@ -66,12 +66,21 @@
         -webkit-font-smoothing: antialiased;
         font-size: 14px;
       }
+
       @media (min-width: 28.75rem) {
         html, body {
           font-size: 16px;
         }
       }
     </style>
+    <script>
+      // Load and register pre-caching Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('sw.js', {
+          scope: '{{htmlWebpackPlugin.options.base}}',
+        }));
+      }
+    </script>
   </head>
   <body>
     <st-shell appTitle="Steganography Toolkit"></st-shell>

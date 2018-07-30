@@ -90,7 +90,8 @@ module.exports = smartMerge({
       },
       hash: true,
       inject: 'head',
-      template: './src/index.html',
+      template: '!!handlebars-loader!./src/index.hbs',
+      base: '/steganography-toolkit/',
     }),
   ],
 });

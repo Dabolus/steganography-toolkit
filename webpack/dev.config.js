@@ -65,7 +65,8 @@ module.exports = smartMerge({
   plugins: [
     new HtmlPlugin({
       inject: 'head',
-      template: './src/index.html',
+      template: '!!handlebars-loader!./src/index.hbs',
+      base: '/',
       showErrors: true,
     }),
   ],
