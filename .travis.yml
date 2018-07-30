@@ -7,7 +7,7 @@ branches:
   - "/^greenkeeper/.*$/"
 env:
   global:
-    secure: D9GaZwse3Li+U04puSosCB9hIBCKLlQtYx9CplUIEv+BbUR72IH7puDgKrEhN7Q0XikuQH+Qc0maWt+0ui7R76xB5BtjWoR9PoI+z7vL+bS4rQa334XVzPF8v74k0/Iq7v3EL7pUp7jKxegePdyMK2aC05PXgnAeMrslNIj48eWdXaMIzd4NEumTZZckbJhSbSCq8vxaQyHsbzjI3L9FydixImZIaGrqKNqcVhDSZFrVQZO4c35wj6N/I6RzfG5kfhqgkIFtIuE8sPx6qPlT2ZziX5LYZFelvMGKaeinRfkssGJBeFoo5JMhciogoAIUitwfd3+GrICoBcz7HZF8YmAgz4XghXZyJlMTqkY+g/tDXWTLY0XXDh+OLVO7SH++LPMiWmBmoy6Qa5PU2XU1X6qodq30KQXvPjRmOknJH4i1mtCU09gR3FzX2N0XjBy2cJUD5Nrsdi+BZeVejldF1OST718DgtNebHLF3l2WjxLGLXd7552YOli5ZgWZUMaeUUiLmT8jwOFyGq1v1N8mS7frdzQcl/9PZTeCIt+8FLSkLMFlOYQ+IKgflVF/FmZJMHy2dANn7sc8TXQCHY5xRb4xv3+GMH/McOZwidQvqpiR9BtO0eDkBi+eS8fzZEPTqTo5+ubK0u6OIT4zwMOrW0SeDyDeAkmsNSXmPuoyC04=
+    secure: vEZ/CL0FS1/UzzL+ZcVzxNGwucdRXft3s6EbqlZITkeVf4FAAiePRPAbkWE0AZ7F8zVB96nRtf/hzud+ICGyMwU0NzGQjeEF1aDf5Tt59LLQcQaqaWCIWSxPzGAckRCI1qn6524xNRn18Ai9sB8ytGMlodiTuDx1HyQ4p/IETOFTavUhN8POO49M968GtFBaH3z8DXFClLcFmYkzJVJH6mov/PdOWWHQfq7dd5tQEPQEyYUvj/dJ0gNKHLPz5V9deGQN9G11vByqn6B2uqzhWM2g3L2zzj4BuIk+wmARrTNwmzOyuhc6E1t3xo6M0ONHAJcysrlM/RV1EF3Oin28h3TIERIIz6OEilYW1RL8+u5AXXmGEaxlU2CK4j/HnLMuROyJDu35ztHIWO25Zv1rmgx9Y9Va6sAhw2PTcytIaGAXUytGWjCTTtVOc+Bv9M0yCKptCAKavK7I/9Z+qDc9hI8ifByGOKunvBOZ4MXGMX9eLOn9dwb1t4rllOrFfiROxNFc2yk2WDu2/D4p2/Xq6dI6RdvWwOw2uYTjLkDy8J/oP+7jBjWlVfU2vz0D6fRZ7X0yc6UGiUKFCNZO5Ja7M2VvzmA1+j7xSH2w9eHMDLeOWe0fazoCfm2jm7Fa9EIFEhraXSEIlMknRv5Uvv7MeSghBerTtErIzRiW8EQqVRI=
 before_install:
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - export PATH="$HOME/.yarn/bin:$PATH"
@@ -16,6 +16,8 @@ script:
 - yarn run lint
 - yarn run build
 after_success:
-- echo "${SFTP_KEY}" | base64 --decode >/tmp/sftp_rsa
-- cd build
-- find **/* -type f -exec curl --ftp-create-dirs -T {} ${SFTP_URL} \;
+- eval "$(ssh-agent -s)"
+- chmod 600 .travis/deploy_key.pem
+- ssh-add .travis/deploy_key.pem
+- git remote add deploy ${GIT_URL}
+- git push deploy
