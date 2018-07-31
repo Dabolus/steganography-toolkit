@@ -54,14 +54,14 @@ class Cicada3301Tab extends PageViewElement {
   };
   static longNote = (note, length) => note.replace(/^(.)(.*)/g, `$1${length}$2${length}`);
 
-  _title = '';
-  _beatUnit = 4;
-  _beatsNum = 4;
-  _key = 'C';
-  _tempo = 90;
-
   ready() {
     super.ready();
+    this._text = '';
+    this._title = '';
+    this._beatUnit = 4;
+    this._beatsNum = 4;
+    this._key = 'C';
+    this._tempo = 90;
     this._paper = this._root.querySelector('#paper');
   }
 
