@@ -15,7 +15,7 @@
     "build": "webpack --config webpack/prod.config.js",
     "gulp": "gulp -f gulp/config.js --cwd .",
     "lint": "yarn run gulp lint",
-    "deploy:surge": "yarn run gulp deploy:surge"
+    "test-scores": "yarn run gulp test-scores"
   },
   "engines": {
     "node": ">=8.11.3"
@@ -40,6 +40,7 @@
     "autoprefixer": "^8.6.5",
     "babel-eslint": "^8.2.6",
     "babel-loader": "^8.0.0-beta.4",
+    "chrome-launcher": "^0.10.2",
     "clean-webpack-plugin": "^0.1.19",
     "connect-history-api-fallback": "^1.5.0",
     "copy-webpack-plugin": "^4.5.2",
@@ -57,6 +58,7 @@
     "html-webpack-plugin": "^3.2.0",
     "htmllint": "^0.7.2",
     "koa-connect": "^2.0.1",
+    "lighthouse": "^3.0.3",
     "lit-html": "^0.10.2",
     "mini-css-extract-plugin": "^0.4.1",
     "node-sass": "^4.9.2",

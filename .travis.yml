@@ -12,7 +12,7 @@ cache: yarn
 script:
 - yarn run lint
 - yarn run build
-- yarn run deploy:surge
+- yarn run test-scores
 after_success:
 - git clone ${GIT_URL}
 - mv build projects/steganography-toolkit

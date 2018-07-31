@@ -1,8 +1,13 @@
-const { task, src, parallel } = require('gulp');
+/* eslint-env node, es6 */
+
+const { task, src, parallel, series } = require('gulp');
 const eslint = require('gulp-eslint');
 const stylelint = require('gulp-stylelint');
 const htmllint = require('gulp-htmllint');
 const surge = require('gulp-surge');
+const lighthouse = require('lighthouse');
+const chromeLauncher = require('chrome-launcher');
+const logger = require('gulplog');
 
 task('lint:scripts', () =>
   src('src/**/*.js')
@@ -33,3 +38,29 @@ task('deploy:surge', () => surge({
   project: 'build',
   domain: 'steganography-toolkit.surge.sh',
 }));
+
+task('wait', () => new Promise((resolve) => setTimeout(resolve, 3000)));
+
+task('lighthouse', () =>
+  chromeLauncher.launch({
+    chromeFlags: ['--headless'],
+  }).then((chrome) =>
+    lighthouse('https://steganography-toolkit.surge.sh', {
+      port: chrome.port,
+    }).then((results) => chrome.kill().then(() => {
+      delete results.artifacts;
+      const { audits } = JSON.parse(results.report);
+      const unsuccessfulAudits = Object.values(audits).filter(({ score }) => score && score < .85);
+      if (unsuccessfulAudits.length > 0) {
+        // eslint-disable-next-line no-console
+        console.error(unsuccessfulAudits.reduce((str, audit) =>
+          `${str}- ${audit.id}: ${audit.displayValue}\n`, '\nSome audits were not successful:\n\n'));
+        return Promise.reject(unsuccessfulAudits);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('\nAll audits passed successfully!\n');
+        return Promise.resolve(audits);
+      }
+    }))));
+
+task('test-scores', series('deploy:surge', 'wait', 'lighthouse'));
