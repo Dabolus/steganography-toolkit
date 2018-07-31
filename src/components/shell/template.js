@@ -50,11 +50,16 @@ export default function template({ appTitle, page, _drawerOpened, _offline, _sub
             <a selected?="${page === 'text' && _subroute === key}" href="/text/${key}">${val}</a>
           `)}
         </iron-collapse>
-        <button selected?="${page === 'view2'}">
+        <button selected?="${page === 'image'}" on-click="${() => this._toggleCollapse('image')}">
           <div class="icon">${imageIcon}</div>
           <div class="name">Image</div>
           <div class="expand-collapse">${expand}</div>
         </button>
+        <iron-collapse class="drawer-sublist" opened?="${_collapses.image}">
+          ${_tabs.image.map(([key, val]) => html`
+            <a selected?="${page === 'image' && _subroute === key}" href="/image/${key}">${val}</a>
+          `)}
+        </iron-collapse>
         <button selected?="${page === 'audio'}" on-click="${() => this._toggleCollapse('audio')}">
           <div class="icon">${audioIcon}</div>
           <div class="name">Audio</div>

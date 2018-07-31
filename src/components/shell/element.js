@@ -23,6 +23,10 @@ class STShell extends LitElement {
     this._tabs = {
       home: [],
       text: [],
+      image: [
+        ['lsb', 'Least Significant Bit'],
+        ['dct', 'Discrete Cosine Transform'],
+      ],
       audio: [
         ['solresol', 'Solresol'],
         ['cicada-3301', 'Cicada 3301'],
