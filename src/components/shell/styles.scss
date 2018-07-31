@@ -47,6 +47,8 @@ app-header {
 .toolbar-list {
   text-align: center;
   text-transform: uppercase;
+  overflow-x: auto;
+  white-space: nowrap;
 
   & > a {
     display: inline-block;
