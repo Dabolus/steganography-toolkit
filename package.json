@@ -14,7 +14,8 @@
     "serve": "webpack-serve --config webpack/dev.config.js",
     "build": "webpack --config webpack/prod.config.js",
     "gulp": "gulp -f gulp/config.js --cwd .",
-    "lint": "yarn run gulp lint"
+    "lint": "yarn run gulp lint",
+    "deploy:surge": "yarn run gulp deploy:surge"
   },
   "engines": {
     "node": ">=8.11.3"

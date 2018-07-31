@@ -5,9 +5,6 @@ branches:
   only:
   - master
   - "/^greenkeeper/.*$/"
-env:
-  global:
-    secure: vEZ/CL0FS1/UzzL+ZcVzxNGwucdRXft3s6EbqlZITkeVf4FAAiePRPAbkWE0AZ7F8zVB96nRtf/hzud+ICGyMwU0NzGQjeEF1aDf5Tt59LLQcQaqaWCIWSxPzGAckRCI1qn6524xNRn18Ai9sB8ytGMlodiTuDx1HyQ4p/IETOFTavUhN8POO49M968GtFBaH3z8DXFClLcFmYkzJVJH6mov/PdOWWHQfq7dd5tQEPQEyYUvj/dJ0gNKHLPz5V9deGQN9G11vByqn6B2uqzhWM2g3L2zzj4BuIk+wmARrTNwmzOyuhc6E1t3xo6M0ONHAJcysrlM/RV1EF3Oin28h3TIERIIz6OEilYW1RL8+u5AXXmGEaxlU2CK4j/HnLMuROyJDu35ztHIWO25Zv1rmgx9Y9Va6sAhw2PTcytIaGAXUytGWjCTTtVOc+Bv9M0yCKptCAKavK7I/9Z+qDc9hI8ifByGOKunvBOZ4MXGMX9eLOn9dwb1t4rllOrFfiROxNFc2yk2WDu2/D4p2/Xq6dI6RdvWwOw2uYTjLkDy8J/oP+7jBjWlVfU2vz0D6fRZ7X0yc6UGiUKFCNZO5Ja7M2VvzmA1+j7xSH2w9eHMDLeOWe0fazoCfm2jm7Fa9EIFEhraXSEIlMknRv5Uvv7MeSghBerTtErIzRiW8EQqVRI=
 before_install:
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - export PATH="$HOME/.yarn/bin:$PATH"
@@ -15,6 +12,7 @@ cache: yarn
 script:
 - yarn run lint
 - yarn run build
+- yarn run deploy:surge
 after_success:
 - git clone ${GIT_URL}
 - mv build projects/steganography-toolkit

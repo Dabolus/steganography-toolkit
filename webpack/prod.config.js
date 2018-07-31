@@ -1,3 +1,5 @@
+/* eslint-env node, es6 */
+
 const { resolve } = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const { loader: miniCssExtractLoader } = require('mini-css-extract-plugin');
@@ -91,7 +93,7 @@ module.exports = smartMerge({
       hash: true,
       inject: 'head',
       template: '!!handlebars-loader!./src/index.hbs',
-      base: '/steganography-toolkit/',
+      base: process.env.BASE_PATH || '/',
     }),
   ],
 });
