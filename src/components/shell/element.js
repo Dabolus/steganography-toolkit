@@ -51,11 +51,12 @@ class STShell extends LitElement {
   }
 
   _locationChanged() {
-    const path = window.decodeURIComponent(window.location.pathname);
+    let path = window.decodeURIComponent(window.location.pathname);
     if (path === '/') {
       // Redirect to home, replacing the history state.
       // In this way, the user won't be trapped in the home page when trying to go back.
       window.history.replaceState({}, '', '/home');
+      path = '/home';
     }
     const [page, subroute] = path.slice(1).split('/');
     this._loadPage(page, subroute);
