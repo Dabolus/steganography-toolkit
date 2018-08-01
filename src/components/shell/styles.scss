@@ -180,8 +180,8 @@ app-drawer > * {
 }
 
 .main-content {
-  padding: 8.1875rem 1.5rem 1.5rem 1.5rem;
-  min-height: calc(100% - 14.1875rem);
+  padding: 8.5rem 1.5rem 1.5rem 1.5rem;
+  min-height: calc(100% - 4rem);
   background: var(--background-color);
   will-change: background-color;
   transition: .2s background-color;
@@ -190,15 +190,16 @@ app-drawer > * {
 :host([page='home']) {
   .main-content {
     padding-top: 5.5rem;
-    min-height: calc(100% - 11.5rem);
   }
 }
 
 footer {
-  padding: 1.5rem;
+  height: 4rem;
   background: var(--drawer-color);
   color: var(--secondary-text-color);
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   a, b {
     font-weight: 700;

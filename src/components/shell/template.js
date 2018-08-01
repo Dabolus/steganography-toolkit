@@ -87,7 +87,7 @@ export default function template({ appTitle, page, _drawerOpened, _offline, _sub
     </main>
     
     <footer>
-      Brought to you with <b>❤</b> by <a href="https://dabolus.app" target="DabolusWebsite">Dabolus</a>
+      <div>Brought to you with <b>❤</b> by <a href="https://dabolus.app" target="DabolusWebsite">Dabolus</a></div>
     </footer>
   `;
 }
