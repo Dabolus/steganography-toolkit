@@ -7,7 +7,6 @@ const htmllint = require('gulp-htmllint');
 const surge = require('gulp-surge');
 const lighthouse = require('lighthouse');
 const chromeLauncher = require('chrome-launcher');
-const logger = require('gulplog');
 
 task('lint:scripts', () =>
   src('src/**/*.js')
