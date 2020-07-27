@@ -7,15 +7,12 @@ _Keep in mind that this project is still in early development, so you won't find
 
 ### Testing the project locally
 
-This project is bundled using [Webpack](https://webpack.js.org/). Some npm scripts are provided to make the development as easy as possible:
+This project was built using Create React App, so you just need to run the usual scripts to get started.
 
 ```bash
-$ serve  # Serves the project in development (watch) mode.
+$ yarn start  # Serves the project in development (watch) mode.
 
-$ build  # Builds the production ready version of the project in the `build/` directory.
-
-$ lint   # Lints the templates, the scripts and the styles of the
-         # project using htmllint, eslint and stylelint respectively.
+$ yarn build  # Builds the production ready version of the project in the `build/` directory.
 ```
 
 ### Contributing
