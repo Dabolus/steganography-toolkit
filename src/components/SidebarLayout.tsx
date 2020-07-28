@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useCallback, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useState,
+  ReactNode,
+} from 'react';
 
 import {
   Drawer,
@@ -6,10 +11,6 @@ import {
   Toolbar,
   IconButton,
   Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   makeStyles,
   useMediaQuery,
   useTheme,
@@ -17,7 +18,10 @@ import {
 } from '@material-ui/core';
 
 import MenuIcon from '@material-ui/icons/Menu';
-import HomeIcon from '@material-ui/icons/Home';
+
+export interface SidebarLayoutProps {
+  menuContent?: ReactNode;
+}
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -41,7 +45,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SidebarLayout: FunctionComponent = () => {
+const SidebarLayout: FunctionComponent<SidebarLayoutProps> = ({
+  menuContent,
+}) => {
   const theme = useTheme();
 
   const classes = useStyles();
@@ -70,14 +76,7 @@ const SidebarLayout: FunctionComponent = () => {
           <Typography variant="h6">Steganography Toolkit</Typography>
         </Toolbar>
         <Divider />
-        <List component="nav" className={classes.menu}>
-          <ListItem button>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText>Home</ListItemText>
-          </ListItem>
-        </List>
+        <div className={classes.menu}>{menuContent}</div>
       </Drawer>
 
       <div className={classes.content}>
