@@ -37,7 +37,9 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     width: '100vw',
+    minHeight: '100vh',
     float: 'right',
+    position: 'relative',
 
     [theme.breakpoints.up('sm')]: {
       width: 'calc(100vw - min(100vw - 64px, 320px))',
@@ -47,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SidebarLayout: FunctionComponent<SidebarLayoutProps> = ({
   menuContent,
+  children,
 }) => {
   const theme = useTheme();
 
@@ -80,7 +83,7 @@ const SidebarLayout: FunctionComponent<SidebarLayoutProps> = ({
       </Drawer>
 
       <div className={classes.content}>
-        <AppBar position="sticky">
+        <AppBar position="static">
           <Toolbar>
             {!isNarrow && (
               <IconButton
@@ -96,6 +99,8 @@ const SidebarLayout: FunctionComponent<SidebarLayoutProps> = ({
             <Typography variant="h6">Home</Typography>
           </Toolbar>
         </AppBar>
+
+        {children}
       </div>
     </>
   );
