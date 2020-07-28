@@ -10,6 +10,8 @@ import SidebarLayout from './components/SidebarLayout';
 import SidebarMenu from './components/SidebarMenu';
 import Loader from './components/Loader';
 
+import AudioRouter from './containers/audio/AudioRouter';
+
 const Home = lazy(() => import('./components/Home'));
 
 function App() {
@@ -46,7 +48,9 @@ function App() {
 
               <Route path="/image">Image</Route>
 
-              <Route path="/audio">Audio</Route>
+              <Route path="/audio">
+                <AudioRouter />
+              </Route>
 
               <Redirect to="/" />
             </Switch>
