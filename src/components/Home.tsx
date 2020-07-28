@@ -17,13 +17,12 @@ const Home: FunctionComponent = () => (
       <Text variant="h1">Welcome to Steganography Toolkit</Text>
       <Text variant="h2">What's this?</Text>
       <Text>
-        Steganography Toolkit is an app aimed to provide a fast and easy way to
-        hide messages in either text, image, audio or video files using various
-        steganographic techniques.
+          Steganography Toolkit is an app aimed to provide a fast and easy way
+          to hide messages in either text, image, audio or video files using
+          various steganographic techniques.
       </Text>
       <Text variant="h2">What is steganography?</Text>
-      <Text>
-        From Wikipedia:
+        <Text>From Wikipedia:</Text>
         <Text
           variant="quote"
           cite="https://en.wikipedia.org/wiki/Steganography"
@@ -34,7 +33,6 @@ const Home: FunctionComponent = () => (
           meaning "covered, concealed, or protected", and graphein (γράφειν)
           meaning "writing".
         </Text>
-      </Text>
       <Text>
         Each steganographic method works and behaves in a completely different
         way and requires a different technique for the hidden message to be
@@ -64,14 +62,14 @@ const Home: FunctionComponent = () => (
             <TableRow>
               <TableCell>Only the secret message is hidden</TableCell>
               <TableCell>
-                The message, as well as the fact that a secret communication is
-                taking place, is hidden
+                  The message, as well as the fact that a secret communication
+                  is taking place, is hidden
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
-                The encrypted message can be seen by anyone, but decrypted only
-                by the recipient
+                  The encrypted message can be seen by anyone, but decrypted
+                  only by the recipient
               </TableCell>
               <TableCell>
                 The message is hidden so that no one sees it, but can be
@@ -90,24 +88,26 @@ const Home: FunctionComponent = () => (
               <TableCell>
                 Is like keeping your money in the vault of a bank
               </TableCell>
-              <TableCell>Is like hiding your money in your mattress</TableCell>
+                <TableCell>
+                  Is like hiding your money in your mattress
+                </TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
       <Text>
-        To sum up, if you need to exchange really sensitive or secret data that
-        might attract attention of third parties, use cryptography. If you want
-        to send something secret and you don't expect anyone to know that you
-        want to, use steganography.
+          To sum up, if you need to exchange really sensitive or secret data
+          that might attract attention of third parties, use cryptography. If
+          you want to send something secret and you don't expect anyone to know
+          that you want to, use steganography.
       </Text>
       <Text variant="h2">
         In which cases steganography is better than crypthography?
       </Text>
       <Text>
         <strong>Never.</strong> Steganography{' '}
-        <strong>does not guarantee</strong> that your message won't be read by a
-        third party. Use steganography at your own risk.
+          <strong>does not guarantee</strong> that your message won't be read by
+          a third party. Use steganography at your own risk.
       </Text>
       <Text variant="h2">So, what can I use steganography for?</Text>
       <Text>
@@ -117,8 +117,8 @@ const Home: FunctionComponent = () => (
       <Text variant="h2">Ok then. How do I get started?</Text>
       <Text>
         Now that you know exactly whether you should use steganography or not,
-        open up the app drawer using the button on the top-left of the page and
-        choose your preferred method to get started!
+          open up the app drawer using the button on the top-left of the page
+          and choose your preferred method to get started!
       </Text>
     </section>
   </Page>
