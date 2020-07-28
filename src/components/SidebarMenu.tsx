@@ -96,12 +96,20 @@ interface ClosedTogglesState {
   audio?: boolean;
 }
 
-const SidebarMenu: FunctionComponent = () => {
+interface SidebarMenuProps {
+  onItemClick?(): void;
+}
+
+const SidebarMenu: FunctionComponent<SidebarMenuProps> = ({ onItemClick }) => {
   const classes = useStyles();
 
   const [closedToggles, setClosedToggles] = useState<ClosedTogglesState>({});
 
-  const createListItemClickHandler = useCallback(
+  const handleListItemClick = useCallback(() => {
+    onItemClick?.();
+  }, [onItemClick]);
+
+  const createToggleableListItemClickHandler = useCallback(
     (key: keyof ClosedTogglesState) => () => {
       setClosedToggles({
         ...closedToggles,
@@ -119,7 +127,7 @@ const SidebarMenu: FunctionComponent = () => {
             button
             {...(subitems
               ? {
-                  onClick: createListItemClickHandler(
+                  onClick: createToggleableListItemClickHandler(
                     key as keyof ClosedTogglesState,
                   ),
                 }
@@ -128,6 +136,7 @@ const SidebarMenu: FunctionComponent = () => {
                   exact: true,
                   to: link || `/${key}`,
                   activeClassName: classes.active,
+                  onClick: handleListItemClick,
                 })}
           >
             <ListItemIcon>{icon}</ListItemIcon>
@@ -158,6 +167,7 @@ const SidebarMenu: FunctionComponent = () => {
                       component={NavLink}
                       to={`${sublink || `/${key}/${subkey}`}`}
                       activeClassName={classes.active}
+                      onClick={handleListItemClick}
                     >
                       <ListItemText>{subtitle}</ListItemText>
                     </ListItem>

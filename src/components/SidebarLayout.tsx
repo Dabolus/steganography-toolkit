@@ -1,32 +1,21 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useState,
-  ReactNode,
-} from 'react';
+import React, { FunctionComponent, ReactNode } from 'react';
 
 import {
   Drawer,
-  AppBar,
   Toolbar,
-  IconButton,
   Typography,
   makeStyles,
   useMediaQuery,
   useTheme,
   Divider,
+  DrawerProps,
 } from '@material-ui/core';
 
-import MenuIcon from '@material-ui/icons/Menu';
-
-export interface SidebarLayoutProps {
+export interface SidebarLayoutProps extends DrawerProps {
   menuContent?: ReactNode;
 }
 
 const useStyles = makeStyles((theme) => ({
-  menuButton: {
-    marginRight: theme.spacing(1.5),
-  },
   toolbar: theme.mixins.toolbar,
   menu: {
     width: 'min(100vw - 56px, 280px)',
@@ -49,7 +38,9 @@ const useStyles = makeStyles((theme) => ({
 
 const SidebarLayout: FunctionComponent<SidebarLayoutProps> = ({
   menuContent,
+  open,
   children,
+  ...props
 }) => {
   const theme = useTheme();
 
@@ -57,23 +48,13 @@ const SidebarLayout: FunctionComponent<SidebarLayoutProps> = ({
 
   const isNarrow = useMediaQuery(theme.breakpoints.up('sm'));
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const handleMenuButtonClick = useCallback(() => {
-    setDrawerOpen(!drawerOpen);
-  }, [drawerOpen]);
-
-  const handleDrawerClose = useCallback(() => {
-    setDrawerOpen(false);
-  }, []);
-
   return (
     <>
       <Drawer
         anchor="left"
         variant={isNarrow ? 'permanent' : 'temporary'}
-        open={isNarrow || drawerOpen}
-        onClose={handleDrawerClose}
+        open={isNarrow || open}
+        {...props}
       >
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6">Steganography Toolkit</Typography>
@@ -82,26 +63,7 @@ const SidebarLayout: FunctionComponent<SidebarLayoutProps> = ({
         <div className={classes.menu}>{menuContent}</div>
       </Drawer>
 
-      <div className={classes.content}>
-        <AppBar position="static">
-          <Toolbar>
-            {!isNarrow && (
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={handleMenuButtonClick}
-                className={classes.menuButton}
-              >
-                <MenuIcon />
-              </IconButton>
-            )}
-            <Typography variant="h6">Home</Typography>
-          </Toolbar>
-        </AppBar>
-
-        {children}
-      </div>
+      <div className={classes.content}>{children}</div>
     </>
   );
 };

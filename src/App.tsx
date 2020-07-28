@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useState, useCallback } from 'react';
 
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
@@ -13,15 +13,33 @@ import Loader from './components/Loader';
 const Home = lazy(() => import('./components/Home'));
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleMenuButtonClick = useCallback(() => {
+    setSidebarOpen(!sidebarOpen);
+  }, [sidebarOpen]);
+
+  const handleSidebarClose = useCallback(() => {
+    setSidebarOpen(false);
+  }, []);
+
+  const handleSidebarItemClick = useCallback(() => {
+    setSidebarOpen(false);
+  }, []);
+
   return (
     <ThemeProvider theme={lightTheme}>
       <CssBaseline />
       <BrowserRouter>
-        <SidebarLayout menuContent={<SidebarMenu />}>
+        <SidebarLayout
+          menuContent={<SidebarMenu onItemClick={handleSidebarItemClick} />}
+          open={sidebarOpen}
+          onClose={handleSidebarClose}
+        >
           <Suspense fallback={<Loader />}>
             <Switch>
               <Route exact path="/">
-                <Home />
+                <Home onMenuButtonClick={handleMenuButtonClick} />
               </Route>
 
               <Route path="/text">Text</Route>
