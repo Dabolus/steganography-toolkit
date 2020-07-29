@@ -14,6 +14,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 
 export interface TopbarLayoutProps {
   title?: ReactNode;
+  topbarContent?: ReactNode;
   onMenuButtonClick?(): void;
 }
 
@@ -43,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TopbarLayout: FunctionComponent<TopbarLayoutProps> = ({
   title = 'Steganography Toolkit',
+  topbarContent,
   onMenuButtonClick,
   children,
 }) => {
@@ -73,6 +75,8 @@ const TopbarLayout: FunctionComponent<TopbarLayoutProps> = ({
           )}
           <Typography variant="h6">{title}</Typography>
         </Toolbar>
+
+        {topbarContent}
       </AppBar>
 
       {children}
