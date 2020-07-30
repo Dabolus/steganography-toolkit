@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 import {
   List,
@@ -103,7 +103,7 @@ const MENU_ITEMS: MenuItem[] = [
   },
 ];
 
-interface ClosedTogglesState {
+interface OpenedTogglesState {
   text?: boolean;
   image?: boolean;
   audio?: boolean;
@@ -113,23 +113,37 @@ interface SidebarMenuProps {
   onItemClick?(): void;
 }
 
+const isToggleablePage = (key: string): key is keyof OpenedTogglesState =>
+  key === 'text' || key === 'image' || key === 'audio';
+
 const SidebarMenu: FunctionComponent<SidebarMenuProps> = ({ onItemClick }) => {
   const classes = useStyles();
 
-  const [closedToggles, setClosedToggles] = useState<ClosedTogglesState>({});
+  const { pathname } = useLocation();
+
+  const [, pathnameKey] = pathname.split('/');
+  console.log(pathnameKey);
+
+  const [openedToggles, setOpenedToggles] = useState<OpenedTogglesState>(
+    isToggleablePage(pathnameKey)
+      ? {
+          [pathnameKey]: true,
+        }
+      : {},
+  );
 
   const handleListItemClick = useCallback(() => {
     onItemClick?.();
   }, [onItemClick]);
 
   const createToggleableListItemClickHandler = useCallback(
-    (key: keyof ClosedTogglesState) => () => {
-      setClosedToggles({
-        ...closedToggles,
-        [key]: !closedToggles[key],
+    (key: keyof OpenedTogglesState) => () => {
+      setOpenedToggles({
+        ...openedToggles,
+        [key]: !openedToggles[key],
       });
     },
-    [closedToggles],
+    [openedToggles],
   );
 
   return (
@@ -141,7 +155,7 @@ const SidebarMenu: FunctionComponent<SidebarMenuProps> = ({ onItemClick }) => {
             {...(subitems
               ? {
                   onClick: createToggleableListItemClickHandler(
-                    key as keyof ClosedTogglesState,
+                    key as keyof OpenedTogglesState,
                   ),
                 }
               : {
@@ -156,17 +170,17 @@ const SidebarMenu: FunctionComponent<SidebarMenuProps> = ({ onItemClick }) => {
             <ListItemText>{title}</ListItemText>
             {subitems && (
               <>
-                {closedToggles[key as keyof ClosedTogglesState] ? (
-                  <ExpandMoreIcon />
-                ) : (
+                {openedToggles[key as keyof OpenedTogglesState] ? (
                   <ExpandLessIcon />
+                ) : (
+                  <ExpandMoreIcon />
                 )}
               </>
             )}
           </ListItem>
           {subitems && (
             <Collapse
-              in={!closedToggles[key as keyof ClosedTogglesState]}
+              in={openedToggles[key as keyof OpenedTogglesState]}
               timeout="auto"
               unmountOnExit
             >
