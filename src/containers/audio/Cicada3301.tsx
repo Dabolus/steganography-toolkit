@@ -11,47 +11,65 @@ import { nextPrime } from '../../helpers';
 
 // TODO: this code was rushed and needs to be improved
 
-const letterNotesMapping: Record<string, string> = {
-  E: 'CC',
-  T: 'GC',
-  A: 'EC',
-  O: 'DC',
-  I: 'FC',
-  N: 'AC',
-  S: 'BC',
-  H: 'cC',
-  R: 'dC',
-  D: 'CA,',
-  L: 'GA,',
-  C: 'EA,',
-  U: 'DA,',
-  M: 'FA,',
-  W: 'AA,',
-  F: 'BA,',
-  G: 'cA,',
-  Y: 'dA,',
-  P: 'CG,',
-  B: 'GG,',
-  V: 'EG,',
-  K: 'DG,',
-  J: 'FG,',
-  X: 'AG,',
-  Q: 'BG,',
-  Z: 'cG,',
-  '0': 'dG,',
-  '1': 'CE,',
-  '2': 'GE,',
-  '3': 'EE,',
-  '4': 'DE,',
-  '5': 'FE,',
-  '6': 'AE,',
-  '7': 'BE,',
-  '8': 'cE,',
-  '9': 'dE,',
+const letterNotesMapping: Record<string, string[]> = {
+  E: ['C', 'C'],
+  T: ['G', 'C'],
+  A: ['E', 'C'],
+  O: ['D', 'C'],
+  I: ['F', 'C'],
+  N: ['A', 'C'],
+  S: ['B', 'C'],
+  H: ['c', 'C'],
+  R: ['d', 'C'],
+  D: ['C', 'A,'],
+  L: ['G', 'A,'],
+  C: ['E', 'A,'],
+  U: ['D', 'A,'],
+  M: ['F', 'A,'],
+  W: ['A', 'A,'],
+  F: ['B', 'A,'],
+  G: ['c', 'A,'],
+  Y: ['d', 'A,'],
+  P: ['C', 'G,'],
+  B: ['G', 'G,'],
+  V: ['E', 'G,'],
+  K: ['D', 'G,'],
+  J: ['F', 'G,'],
+  X: ['A', 'G,'],
+  Q: ['B', 'G,'],
+  Z: ['c', 'G,'],
+  '0': ['d', 'G,'],
+  '1': ['C', 'E,'],
+  '2': ['G', 'E,'],
+  '3': ['E', 'E,'],
+  '4': ['D', 'E,'],
+  '5': ['F', 'E,'],
+  '6': ['A', 'E,'],
+  '7': ['B', 'E,'],
+  '8': ['c', 'E,'],
+  '9': ['d', 'E,'],
 };
 
-const longNote = (note: string, length: number) =>
-  note.replace(/^(.)(.*)/g, `$1${length}$2${length}`);
+enum TieType {
+  NONE,
+  OPEN,
+  CLOSE,
+  OPEN_CLOSE,
+}
+
+const getNote = (letter: string, length = 1, tieType = TieType.NONE) => {
+  const notes = letterNotesMapping[letter];
+
+  return `[${notes.reduce(
+    (finalNote, note) =>
+      `${finalNote}${
+        tieType === TieType.OPEN || tieType === TieType.OPEN_CLOSE ? '(' : ''
+      }${note}${
+        tieType === TieType.CLOSE || tieType === TieType.OPEN_CLOSE ? ')' : ''
+      }${length > 1 ? length : ''}`,
+    '',
+  )}]`;
+};
 
 const computeAbc = ({
   input,
@@ -60,13 +78,14 @@ const computeAbc = ({
   key,
   tempo,
 }: Cicada3301FormValue): string => {
-  let resultStr =
-    'X: 1\n' +
-    `T: ${title}\n` +
-    `M: ${meterBeats}/${meterNoteValue}\n` +
-    `K: ${key}\n` +
-    'L: 1/4\n' +
-    `Q: ${tempo}\n`;
+  let resultStr = [
+    'X: 1\n',
+    ...(title ? [`T: ${title}\n`] : []),
+    `M: ${meterBeats}/${meterNoteValue}\n`,
+    ...(key ? [`K: ${key}\n`] : []),
+    'L: 1/4\n',
+    `Q: ${tempo}\n`,
+  ].join('');
 
   const words = input
     .replace(/[^a-z0-9 ]/gi, '')
@@ -83,7 +102,7 @@ const computeAbc = ({
     const [...letters] = word.slice(0, -1);
 
     const initialNotes = letters.reduce((str, letter) => {
-      str += `[${letterNotesMapping[letter]}]`;
+      str += getNote(letter);
 
       noteIndex++;
 
@@ -98,7 +117,7 @@ const computeAbc = ({
       return str;
     }, '');
 
-    const lastNote = letterNotesMapping[word.slice(-1)];
+    const lastLetter = word.slice(-1);
     const lastNoteLength = nextPrime(word.length) - word.length + 1;
 
     // If adding the last note takes us to the next bar, we have to divide the note into parts
@@ -118,11 +137,11 @@ const computeAbc = ({
     let finalAbc = `${abc}${initialNotes}`;
 
     if (remainingNotes < 1) {
-      return `${finalAbc}[${longNote(lastNote, lastNoteLength)}]`;
+      return `${finalAbc}${getNote(lastLetter, lastNoteLength)}`;
     }
 
     // Fill the available space in the current bar
-    finalAbc += `([${longNote(lastNote, availableSpace)}]|`;
+    finalAbc += `${getNote(lastLetter, availableSpace, TieType.OPEN)}|`;
 
     noteIndex += availableSpace;
 
@@ -133,11 +152,10 @@ const computeAbc = ({
     // Add all the full bars
     for (let j = 0; j < fullBars; j++) {
       // If we have more full bars to add, or there are some more notes after the final full bar, we have to start a new tie
-      if (j < fullBars - 1 || finalNotes > 0) {
-        finalAbc += '(';
-      }
+      const tieType =
+        j < fullBars - 1 || finalNotes > 0 ? TieType.OPEN_CLOSE : TieType.CLOSE;
 
-      finalAbc += `[${longNote(lastNote, meterBeats)}])|`;
+      finalAbc += `${getNote(lastLetter, meterBeats, tieType)}|`;
 
       noteIndex += meterBeats;
 
@@ -148,7 +166,7 @@ const computeAbc = ({
 
     // Add the final notes
     if (finalNotes > 0) {
-      finalAbc += `[${longNote(lastNote, finalNotes)}])`;
+      finalAbc += getNote(lastLetter, finalNotes, TieType.CLOSE);
     }
 
     return finalAbc;
