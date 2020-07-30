@@ -1,8 +1,10 @@
-import React, { FunctionComponent } from 'react';
+import React, { lazy, FunctionComponent } from 'react';
 
 import { useRouteMatch, Switch, Route, Redirect } from 'react-router-dom';
 
 import { TopbarLayoutProps } from '../../components/TopbarLayout';
+
+const Cicada3301 = lazy(() => import('./Cicada3301'));
 
 const AudioRouter: FunctionComponent<TopbarLayoutProps> = (props) => {
   const { path } = useRouteMatch();
@@ -22,7 +24,7 @@ const AudioRouter: FunctionComponent<TopbarLayoutProps> = (props) => {
       <Route path={`${path}/cicada-3301`}>
         <Switch>
           <Route exact path={`${path}/cicada-3301`}>
-            <h1>Cicada 3301</h1>
+            <Cicada3301 />
           </Route>
 
           <Redirect to={`${path}/cicada-3301`} />
