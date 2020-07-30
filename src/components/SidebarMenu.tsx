@@ -56,7 +56,20 @@ const MENU_ITEMS: MenuItem[] = [
     key: 'text',
     title: 'Text',
     icon: <TitleIcon />,
-    subitems: [],
+    subitems: [
+      {
+        key: 'mlp',
+        title: 'Missing Letter Puzzle',
+      },
+      {
+        key: 'wordlist',
+        title: 'Wordlist',
+      },
+      {
+        key: 'Paragraph',
+        title: 'Paragraph',
+      },
+    ],
   },
   {
     key: 'image',
