@@ -11,7 +11,7 @@ export interface AbcProps {
 
 const Abc: FunctionComponent<AbcProps> = ({
   src,
-  params = { responsive: 'resize', viewportHorizontal: true },
+  params = { responsive: 'resize' },
 }) => {
   const [id, setId] = useState<string | null>(null);
 
