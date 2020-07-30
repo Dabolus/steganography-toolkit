@@ -122,7 +122,6 @@ const SidebarMenu: FunctionComponent<SidebarMenuProps> = ({ onItemClick }) => {
   const { pathname } = useLocation();
 
   const [, pathnameKey] = pathname.split('/');
-  console.log(pathnameKey);
 
   const [openedToggles, setOpenedToggles] = useState<OpenedTogglesState>(
     isToggleablePage(pathnameKey)
