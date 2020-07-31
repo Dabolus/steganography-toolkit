@@ -1,7 +1,12 @@
 import React, { FunctionComponent } from 'react';
-import { makeStyles, Theme, CircularProgress } from '@material-ui/core';
+import {
+  makeStyles,
+  Theme,
+  CircularProgress,
+  CircularProgressProps,
+} from '@material-ui/core';
 
-export interface LoaderProps {
+export interface LoaderProps extends CircularProgressProps {
   size?: number;
 }
 
