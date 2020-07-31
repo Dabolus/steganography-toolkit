@@ -217,7 +217,7 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
 
   const handleAbcRender = useCallback<NonNullable<AbcProps['onRender']>>(
     ([output]) => {
-        setAbcRenderOutput(output);
+      setAbcRenderOutput(output);
     },
     [],
   );
@@ -237,8 +237,8 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
 
     const blob = new Blob([input], { type: 'text/vnd.abc' });
 
-    saveAs(blob, 'song.abc');
-  }, [input]);
+    saveAs(blob, `${data?.title || 'song'}.abc`);
+  }, [data, input]);
 
   const handleSvgExport = useCallback(() => {
     handleExportMenuClose();
@@ -260,8 +260,8 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
 
     const blob = new Blob([transformedSvg], { type: 'image/svg+xml' });
 
-    saveAs(blob, 'song.svg');
-  }, [abcRenderOutput, handleExportMenuClose]);
+    saveAs(blob, `${data?.title || 'song'}.svg`);
+  }, [abcRenderOutput, data, handleExportMenuClose]);
 
   const handleWavExport = useCallback(async () => {
     handleExportMenuClose();
@@ -287,8 +287,8 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
 
     const wav = midiBuffer.download();
 
-    saveAs(wav, 'song.wav');
-  }, [abcRenderOutput, handleExportMenuClose]);
+    saveAs(wav, `${data?.title || 'song'}.wav`);
+  }, [abcRenderOutput, data, handleExportMenuClose]);
 
   return (
     <TopbarLayout title="Cicada 3301" {...props}>
