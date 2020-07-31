@@ -1,4 +1,13 @@
-import React, { FunctionComponent, useState, useCallback } from 'react';
+import React, { FunctionComponent, useState, useCallback, useRef } from 'react';
+
+import ABCJS from 'abcjs';
+
+import { saveAs } from 'file-saver';
+
+import { Button, Menu, MenuItem, Box, Grid } from '@material-ui/core';
+
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 import TopbarLayout, { TopbarLayoutProps } from '../../components/TopbarLayout';
 import Page from '../../components/Page';
@@ -6,7 +15,7 @@ import Cicada3301Form, {
   Cicada3301FormProps,
   Cicada3301FormValue,
 } from '../../components/audio/Cicada3301Form';
-import Abc from '../../components/audio/Abc';
+import Abc, { AbcProps } from '../../components/audio/Abc';
 import { nextPrime } from '../../helpers';
 
 // TODO: this code was rushed and needs to be improved
@@ -175,8 +184,14 @@ const computeAbc = ({
   return `${resultStr}${computedAbc}`;
 };
 
+let latestInput: any = null;
+
 const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [input, setInput] = useState<string>();
+  const [abcRenderOutput, setAbcRenderOutput] = useState<any>();
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleFormChange = useCallback<
     NonNullable<Cicada3301FormProps['onChange']>
@@ -186,11 +201,109 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
     setInput(abc);
   }, []);
 
+  const handleAbcRender = useCallback<NonNullable<AbcProps['onRender']>>(
+    ([output]) => {
+      // TODO: debug the infinite loop that requires this check
+      if (input !== latestInput) {
+        latestInput = input;
+        setAbcRenderOutput(output);
+      }
+    },
+    [input],
+  );
+
+  const handleExportButtonClick = useCallback(async () => {
+    setExportMenuOpen(true);
+  }, []);
+
+  const handleExportMenuClose = useCallback(() => {
+    setExportMenuOpen(false);
+  }, []);
+
+  const handleAbcExport = useCallback(() => {
+    if (!input) {
+      return;
+    }
+
+    const blob = new Blob([input], { type: 'text/vnd.abc' });
+
+    saveAs(blob, 'song.abc');
+  }, [input]);
+
+  const handleWavExport = useCallback(async () => {
+    handleExportMenuClose();
+
+    if (!abcRenderOutput) {
+      return;
+    }
+
+    const audioContext = new AudioContext();
+    await audioContext.resume();
+
+    const midiBuffer = new ABCJS.synth.CreateSynth();
+    await midiBuffer.init({
+      visualObj: abcRenderOutput,
+      audioContext,
+      millisecondsPerMeasure: abcRenderOutput.millisecondsPerMeasure(),
+      options: {
+        soundFontUrl: `${process.env.PUBLIC_URL}/sounds/`,
+        program: 0,
+      },
+    });
+    await midiBuffer.prime();
+
+    const wav = midiBuffer.download();
+
+    saveAs(wav, 'song.wav');
+  }, [abcRenderOutput, handleExportMenuClose]);
+
   return (
     <TopbarLayout title="Cicada 3301" {...props}>
       <Page>
-        <Cicada3301Form onChange={handleFormChange} />
-        <Abc src={input} />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Cicada3301Form onChange={handleFormChange} />
+          </Grid>
+          <Grid item xs={12}>
+            <Box textAlign="center">
+              <Button
+                ref={exportButtonRef}
+                variant="contained"
+                color="secondary"
+                aria-controls="export-menu"
+                aria-haspopup="true"
+                endIcon={
+                  exportMenuOpen ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
+                }
+                onClick={handleExportButtonClick}
+              >
+                Export as
+              </Button>
+              <Menu
+                id="export-menu"
+                getContentAnchorEl={null}
+                anchorEl={exportButtonRef.current}
+                anchorOrigin={{
+                  horizontal: 'right',
+                  vertical: 'bottom',
+                }}
+                transformOrigin={{
+                  horizontal: 'right',
+                  vertical: 'top',
+                }}
+                keepMounted
+                open={exportMenuOpen}
+                onClose={handleExportMenuClose}
+              >
+                <MenuItem onClick={handleAbcExport}>abc</MenuItem>
+                <MenuItem onClick={handleWavExport}>WAV</MenuItem>
+              </Menu>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Abc src={input} onRender={handleAbcRender} />
+          </Grid>
+        </Grid>
       </Page>
     </TopbarLayout>
   );

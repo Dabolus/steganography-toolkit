@@ -2,16 +2,18 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 
 import { Box } from '@material-ui/core';
 
-import abcjs from 'abcjs';
+import ABCJS from 'abcjs';
 
 export interface AbcProps {
   src?: string;
   params?: any;
+  onRender?(output: any): void;
 }
 
 const Abc: FunctionComponent<AbcProps> = ({
   src,
   params = { responsive: 'resize' },
+  onRender,
 }) => {
   const [id, setId] = useState<string | null>(null);
 
@@ -24,8 +26,8 @@ const Abc: FunctionComponent<AbcProps> = ({
       return;
     }
 
-    abcjs.renderAbc(id, src, params);
-  }, [id, params, src]);
+    onRender?.(ABCJS.renderAbc(id, src, params));
+  }, [id, onRender, params, src]);
 
   return id ? <Box id={id} width={1} /> : null;
 };
