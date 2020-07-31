@@ -1,4 +1,10 @@
-import React, { useEffect, useState, HTMLAttributes, forwardRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  HTMLAttributes,
+  forwardRef,
+  memo,
+} from 'react';
 
 import { Box } from '@material-ui/core';
 
@@ -34,4 +40,4 @@ const Abc = forwardRef<HTMLDivElement, AbcProps>(
   },
 );
 
-export default Abc;
+export default memo(Abc);
