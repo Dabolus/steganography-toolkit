@@ -192,6 +192,7 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
   const exportButtonRef = useRef<HTMLButtonElement>(null);
+  const abcRef = useRef<HTMLDivElement>(null);
 
   const handleFormChange = useCallback<
     NonNullable<Cicada3301FormProps['onChange']>
@@ -229,6 +230,29 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
 
     saveAs(blob, 'song.abc');
   }, [input]);
+
+  const handleSvgExport = useCallback(() => {
+    handleExportMenuClose();
+
+    if (!abcRenderOutput || !abcRef.current) {
+      return;
+    }
+
+    const svg = abcRef.current.querySelector('svg')?.outerHTML;
+
+    if (!svg) {
+      return;
+    }
+
+    const transformedSvg = svg.replace(
+      '<svg',
+      '<svg xmlns="http://www.w3.org/2000/svg"',
+    );
+
+    const blob = new Blob([transformedSvg], { type: 'image/svg+xml' });
+
+    saveAs(blob, 'song.svg');
+  }, [abcRenderOutput, handleExportMenuClose]);
 
   const handleWavExport = useCallback(async () => {
     handleExportMenuClose();
@@ -296,12 +320,13 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
                 onClose={handleExportMenuClose}
               >
                 <MenuItem onClick={handleAbcExport}>abc</MenuItem>
+                <MenuItem onClick={handleSvgExport}>SVG</MenuItem>
                 <MenuItem onClick={handleWavExport}>WAV</MenuItem>
               </Menu>
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Abc src={input} onRender={handleAbcRender} />
+            <Abc ref={abcRef} src={input} onRender={handleAbcRender} />
           </Grid>
         </Grid>
       </Page>

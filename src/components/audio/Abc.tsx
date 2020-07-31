@@ -1,35 +1,37 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { useEffect, useState, HTMLAttributes, forwardRef } from 'react';
 
 import { Box } from '@material-ui/core';
 
 import ABCJS from 'abcjs';
 
-export interface AbcProps {
+export interface AbcProps extends HTMLAttributes<HTMLDivElement> {
   src?: string;
   params?: any;
   onRender?(output: any): void;
 }
 
-const Abc: FunctionComponent<AbcProps> = ({
-  src,
-  params = { responsive: 'resize' },
-  onRender,
-}) => {
-  const [id, setId] = useState<string | null>(null);
+const Abc = forwardRef<HTMLDivElement, AbcProps>(
+  ({ src, params = { responsive: 'resize' }, onRender, ...props }, ref) => {
+    const [id, setId] = useState<string | null>(null);
 
-  useEffect(() => {
-    setId(`abc-result-${Date.now() + Math.random()}`);
-  }, []);
+    useEffect(() => {
+      setId(`abc-result-${Date.now() + Math.random()}`);
+    }, []);
 
-  useEffect(() => {
-    if (!id || !src) {
-      return;
-    }
+    useEffect(() => {
+      if (!id || !src) {
+        return;
+      }
 
-    onRender?.(ABCJS.renderAbc(id, src, params));
-  }, [id, onRender, params, src]);
+      onRender?.(ABCJS.renderAbc(id, src, params));
+    }, [id, onRender, params, src]);
 
-  return id ? <Box id={id} width={1} /> : null;
-};
+    return (
+      <div ref={ref} {...props}>
+        {id ? <Box id={id} width={1} /> : null}
+      </div>
+    );
+  },
+);
 
 export default Abc;
