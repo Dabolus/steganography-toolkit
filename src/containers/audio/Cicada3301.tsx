@@ -1,4 +1,12 @@
-import React, { FunctionComponent, useState, useCallback, useRef } from 'react';
+import React, {
+  FunctionComponent,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
+
+import { useDebounce } from 'use-debounce';
 
 import ABCJS from 'abcjs';
 
@@ -184,33 +192,34 @@ const computeAbc = ({
   return `${resultStr}${computedAbc}`;
 };
 
-let latestInput: any = null;
-
 const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
+  const [data, setData] = useState<Cicada3301FormValue>();
   const [input, setInput] = useState<string>();
   const [abcRenderOutput, setAbcRenderOutput] = useState<any>();
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
+  const [debouncedData] = useDebounce(data, 200);
+
   const exportButtonRef = useRef<HTMLButtonElement>(null);
   const abcRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (debouncedData) {
+      setInput(computeAbc(debouncedData));
+    }
+  }, [debouncedData]);
 
   const handleFormChange = useCallback<
     NonNullable<Cicada3301FormProps['onChange']>
   >((data) => {
-    const abc = computeAbc(data);
-
-    setInput(abc);
+    setData(data);
   }, []);
 
   const handleAbcRender = useCallback<NonNullable<AbcProps['onRender']>>(
     ([output]) => {
-      // TODO: debug the infinite loop that requires this check
-      if (input !== latestInput) {
-        latestInput = input;
         setAbcRenderOutput(output);
-      }
     },
-    [input],
+    [],
   );
 
   const handleExportButtonClick = useCallback(async () => {
