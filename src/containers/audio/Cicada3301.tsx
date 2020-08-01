@@ -198,7 +198,7 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [abcRenderOutput, setAbcRenderOutput] = useState<any>();
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
-  const [debouncedData] = useDebounce(data, 200);
+  const [debouncedData] = useDebounce(data, 300);
 
   const exportButtonRef = useRef<HTMLButtonElement>(null);
   const abcRef = useRef<HTMLDivElement>(null);
