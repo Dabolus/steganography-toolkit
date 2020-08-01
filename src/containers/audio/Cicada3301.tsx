@@ -10,6 +10,8 @@ import { useDebounce } from 'use-debounce';
 
 import ABCJS from 'abcjs';
 
+import { Mp3Encoder } from 'lamejs';
+
 import { saveAs } from 'file-saver';
 
 import { Button, Menu, MenuItem, Box, Grid } from '@material-ui/core';
@@ -285,9 +287,48 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
     });
     await midiBuffer.prime();
 
-    const wav = midiBuffer.download();
+    const wavUrl = midiBuffer.download();
 
-    saveAs(wav, `${data?.title || 'song'}.wav`);
+    saveAs(wavUrl, `${data?.title || 'song'}.wav`);
+  }, [abcRenderOutput, data, handleExportMenuClose]);
+
+  const handleMp3Export = useCallback(async () => {
+    handleExportMenuClose();
+
+    if (!abcRenderOutput) {
+      return;
+    }
+
+    const audioContext = new AudioContext();
+    await audioContext.resume();
+
+    const midiBuffer = new ABCJS.synth.CreateSynth();
+    await midiBuffer.init({
+      visualObj: abcRenderOutput,
+      audioContext,
+      millisecondsPerMeasure: abcRenderOutput.millisecondsPerMeasure(),
+      options: {
+        soundFontUrl: `${process.env.PUBLIC_URL}/sounds/`,
+        program: 0,
+      },
+    });
+    await midiBuffer.prime();
+
+    const wavUrl = midiBuffer.download();
+
+    const wavResponse = await fetch(wavUrl);
+
+    const arrayBuffer = await wavResponse.arrayBuffer();
+
+    const int16Array = new Int16Array(arrayBuffer);
+
+    const encoder = new Mp3Encoder(1, 44100, 320);
+
+    const mp3 = [encoder.encodeBuffer(int16Array), encoder.flush()];
+
+    const blob = new Blob(mp3, { type: 'audio/mp3' });
+
+    saveAs(blob, `${data?.title || 'song'}.mp3`);
   }, [abcRenderOutput, data, handleExportMenuClose]);
 
   return (
@@ -331,6 +372,7 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
                 <MenuItem onClick={handleAbcExport}>abc</MenuItem>
                 <MenuItem onClick={handleSvgExport}>SVG</MenuItem>
                 <MenuItem onClick={handleWavExport}>WAV</MenuItem>
+                <MenuItem onClick={handleMp3Export}>MP3</MenuItem>
               </Menu>
             </Box>
           </Grid>
