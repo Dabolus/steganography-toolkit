@@ -24,7 +24,7 @@ const AudioRouter: FunctionComponent<TopbarLayoutProps> = (props) => {
       <Route path={`${path}/cicada-3301`}>
         <Switch>
           <Route exact path={`${path}/cicada-3301`}>
-            <Cicada3301 />
+            <Cicada3301 {...props} />
           </Route>
 
           <Redirect to={`${path}/cicada-3301`} />

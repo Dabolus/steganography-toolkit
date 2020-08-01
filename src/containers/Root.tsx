@@ -61,7 +61,7 @@ const Root: FunctionComponent = () => {
             <Route path="/image">Image</Route>
 
             <Route path="/audio">
-              <AudioRouter />
+              <AudioRouter onMenuButtonClick={handleMenuButtonClick} />
             </Route>
 
             <Redirect to="/" />
