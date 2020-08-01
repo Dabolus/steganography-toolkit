@@ -4,6 +4,7 @@ import { useRouteMatch, Switch, Route, Redirect } from 'react-router-dom';
 
 import { TopbarLayoutProps } from '../../components/TopbarLayout';
 
+const Solresol = lazy(() => import('./Solresol'));
 const Cicada3301 = lazy(() => import('./Cicada3301'));
 
 const AudioRouter: FunctionComponent<TopbarLayoutProps> = (props) => {
@@ -14,7 +15,7 @@ const AudioRouter: FunctionComponent<TopbarLayoutProps> = (props) => {
       <Route path={`${path}/solresol`}>
         <Switch>
           <Route exact path={`${path}/solresol`}>
-            <h1>Solresol</h1>
+            <Solresol {...props} />
           </Route>
 
           <Redirect to={`${path}/solresol`} />
