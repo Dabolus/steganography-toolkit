@@ -20,9 +20,14 @@ import { useDebounce } from 'use-debounce';
 
 import useFuse from '../../hooks/useFuse';
 
-import solresolDictionary from '../../static/solresol/dictionary.json';
+import rawSolresolDictionary from '../../static/solresol/dictionary.json';
 import TopbarLayout, { TopbarLayoutProps } from '../../components/TopbarLayout';
 import Page from '../../components/Page';
+
+const solresolDictionary = rawSolresolDictionary.flatMap(
+  ({ english = [], ...rest }) =>
+    english.map((word: string) => ({ english: word, ...rest })),
+);
 
 const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [input, setInput] = useState<string>('');
@@ -35,7 +40,6 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
     solresolDictionary,
     {
       keys: ['english'],
-      includeMatches: true,
       includeScore: true,
     },
   );
@@ -62,8 +66,8 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
     ) {
       const [word] = matches;
 
-      const translation = solresolDictionary.find(({ english }) =>
-        english?.includes(word.toLowerCase()),
+      const translation = solresolDictionary.find(
+        ({ english }) => english === word.toLowerCase(),
       )?.solresol;
 
       if (translation) {
@@ -80,13 +84,14 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
       }
 
       const [
-        {
-          score = 1,
-          matches: [{ value: possibleWord = undefined } = {}] = [],
-        } = {},
+        { score = 1, item: { english: possibleWord = undefined } = {} } = {},
       ] = search(word);
 
-      if (possibleWord && score < 0.01) {
+      if (
+        possibleWord &&
+        Math.abs(word.length - possibleWord.length) < 3 &&
+        score < 0.01
+      ) {
         possibleHint = `${possibleHint.slice(
           0,
           regex.lastIndex + hintOffset - word.length,
