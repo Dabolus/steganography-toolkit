@@ -51,6 +51,7 @@
     "@types/file-saver": "^2.0.1",
     "@types/react-router-dom": "^5.1.5",
     "copy-webpack-plugin": "^6.0.3",
+    "firebase-tools": "^8.6.0",
     "react-app-rewired": "^2.1.6"
   },
   "resolutions": {
