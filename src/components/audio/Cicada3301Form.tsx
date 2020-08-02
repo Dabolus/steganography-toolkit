@@ -242,7 +242,7 @@ const Cicada3301Form: FunctionComponent<Cicada3301FormProps> = ({
           </FormHelperText>
         </FormControl>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12}>
         <FormControl fullWidth>
           <FormLabel className={classes.label}>Title</FormLabel>
           <OutlinedInput
