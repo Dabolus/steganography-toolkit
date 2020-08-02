@@ -70,20 +70,27 @@ export type MusicalKey =
   | 'Ebm'
   | 'Abm';
 
+export type Language = 'en' | 'it';
+
 export interface Cicada3301FormValue {
   input: string;
   title: string;
   meter: [number, number];
   key: MusicalKey | null;
   tempo: number;
+  language: Language;
 }
 
 export type Cicada3301FormState = {
-  [key in keyof Omit<Cicada3301FormValue, 'meter' | 'key'>]: string;
+  [key in keyof Omit<
+    Cicada3301FormValue,
+    'meter' | 'key' | 'language'
+  >]: string;
 } & {
   key: MusicalKey | '';
   meterBeats: string;
   meterNoteValue: string;
+  language: Language;
 };
 
 export enum Cicada3301FormActionType {
@@ -135,6 +142,7 @@ const defaultState: Cicada3301FormState = {
   meterNoteValue: '4',
   key: '',
   tempo: '90',
+  language: 'en',
 };
 
 const Cicada3301Form: FunctionComponent<Cicada3301FormProps> = ({
@@ -186,6 +194,16 @@ const Cicada3301Form: FunctionComponent<Cicada3301FormProps> = ({
     },
     [],
   );
+
+  const handleLanguageChange = useCallback<
+    NonNullable<SelectProps['onChange']>
+  >((event) => {
+    dispatch({
+      type: Cicada3301FormActionType.SET_FIELD,
+      field: 'language',
+      value: event.target.value as Language,
+    });
+  }, []);
 
   useEffect(() => {
     const { meterBeats, meterNoteValue, tempo, key, ...rest } = state;
@@ -317,6 +335,20 @@ const Cicada3301Form: FunctionComponent<Cicada3301FormProps> = ({
             value={state.tempo}
             onInput={createTextFieldInputHandler('tempo')}
           />
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <FormControl fullWidth>
+          <FormLabel className={classes.label}>Language</FormLabel>
+          <Select
+            native
+            variant="outlined"
+            value={state.language}
+            onChange={handleLanguageChange}
+          >
+            <option value="en">English (original)</option>
+            <option value="it">Italian</option>
+          </Select>
         </FormControl>
       </Grid>
     </Grid>
