@@ -18,16 +18,14 @@ import {
 
 import { useDebounce } from 'use-debounce';
 
-import useFuse from '../../hooks/useFuse';
-
-import rawSolresolDictionary from '../../static/solresol/dictionary.json';
 import TopbarLayout, { TopbarLayoutProps } from '../../components/TopbarLayout';
 import Page from '../../components/Page';
 
-const solresolDictionary = rawSolresolDictionary.flatMap(
-  ({ english = [], ...rest }) =>
-    english.map((word: string) => ({ english: word, ...rest })),
-);
+import * as SolresolWorker from '../../workers/audio/solresol.worker';
+
+const {
+  computeOutput,
+} = new (SolresolWorker as any)() as typeof SolresolWorker;
 
 const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [input, setInput] = useState<string>('');
@@ -36,74 +34,25 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
 
   const [debouncedInput] = useDebounce(input, 300);
 
-  const { search } = useFuse<{ solresol: string; english: string }>(
-    solresolDictionary,
-    {
-      keys: ['english'],
-      includeScore: true,
-    },
-  );
-
   useEffect(() => {
-    if (!debouncedInput) {
-      setHint('');
-      setOutput('');
-      return;
-    }
-
-    const regex = /([a-z]+)/gi;
-
-    let possibleOutput = debouncedInput;
-    let possibleHint = debouncedInput;
-
-    let outputOffset = 0;
-    let hintOffset = 0;
-
-    for (
-      let matches = regex.exec(debouncedInput);
-      matches !== null;
-      matches = regex.exec(debouncedInput)
-    ) {
-      const [word] = matches;
-
-      const translation = solresolDictionary.find(
-        ({ english }) => english === word.toLowerCase(),
-      )?.solresol;
-
-      if (translation) {
-        possibleOutput = `${possibleOutput.slice(
-          0,
-          regex.lastIndex + outputOffset - word.length,
-        )}${translation}${possibleOutput.slice(
-          regex.lastIndex + outputOffset,
-        )}`;
-
-        outputOffset += translation.length - word.length;
-
-        continue;
+    const compute = async () => {
+      if (!debouncedInput) {
+        setHint('');
+        setOutput('');
+        return;
       }
 
-      const [
-        { score = 1, item: { english: possibleWord = undefined } = {} } = {},
-      ] = search(word);
+      const {
+        output: possibleOutput,
+        hint: possibleHint,
+      } = await computeOutput(debouncedInput);
 
-      if (
-        possibleWord &&
-        Math.abs(word.length - possibleWord.length) < 3 &&
-        score < 0.01
-      ) {
-        possibleHint = `${possibleHint.slice(
-          0,
-          regex.lastIndex + hintOffset - word.length,
-        )}${possibleWord}${possibleHint.slice(regex.lastIndex + hintOffset)}`;
+      setOutput(possibleOutput);
+      setHint(possibleHint !== debouncedInput ? possibleHint : '');
+    };
 
-        hintOffset += possibleWord.length - word.length;
-      }
-    }
-
-    setOutput(possibleOutput);
-    setHint(possibleHint !== debouncedInput ? possibleHint : '');
-  }, [debouncedInput, search]);
+    compute();
+  }, [debouncedInput]);
 
   const handleInput = useCallback<NonNullable<OutlinedInputProps['onInput']>>(
     (event) => {
