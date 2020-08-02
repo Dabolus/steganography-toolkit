@@ -18,6 +18,7 @@ import {
   Box,
   Select,
   SelectProps,
+  FormHelperText,
 } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -228,6 +229,11 @@ const Cicada3301Form: FunctionComponent<Cicada3301FormProps> = ({
             value={state.input}
             onInput={handleInputInput}
           />
+          <FormHelperText>
+            Note: only uppercase letters and digits are supported. Lowercase
+            letters will be converted to uppercase and special characters will
+            be discarded.
+          </FormHelperText>
         </FormControl>
       </Grid>
       <Grid item xs={12} sm={6}>
