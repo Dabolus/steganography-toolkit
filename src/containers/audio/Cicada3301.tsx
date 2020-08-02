@@ -27,6 +27,7 @@ import Cicada3301Form, {
   Language,
 } from '../../components/audio/Cicada3301Form';
 import Abc, { AbcProps } from '../../components/audio/Abc';
+import Loader from '../../components/Loader';
 import { nextPrime } from '../../helpers';
 
 import letterNotesMapping from '../../static/cicada3301/letterNotesMapping.json';
@@ -176,6 +177,7 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [input, setInput] = useState<string>();
   const [abcRenderOutput, setAbcRenderOutput] = useState<any>();
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const [debouncedData] = useDebounce(data, 300);
 
@@ -214,17 +216,25 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
       return;
     }
 
+    handleExportMenuClose();
+
+    setIsExporting(true);
+
     const blob = new Blob([input], { type: 'text/vnd.abc' });
 
     saveAs(blob, `${data?.title || 'song'}.abc`);
-  }, [data, input]);
+
+    setIsExporting(false);
+  }, [data, handleExportMenuClose, input]);
 
   const handleSvgExport = useCallback(() => {
-    handleExportMenuClose();
-
     if (!abcRenderOutput || !abcRef.current) {
       return;
     }
+
+    handleExportMenuClose();
+
+    setIsExporting(true);
 
     const svg = abcRef.current.querySelector('svg')?.outerHTML;
 
@@ -240,14 +250,18 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
     const blob = new Blob([transformedSvg], { type: 'image/svg+xml' });
 
     saveAs(blob, `${data?.title || 'song'}.svg`);
+
+    setIsExporting(false);
   }, [abcRenderOutput, data, handleExportMenuClose]);
 
   const handleWavExport = useCallback(async () => {
-    handleExportMenuClose();
-
     if (!abcRenderOutput) {
       return;
     }
+
+    handleExportMenuClose();
+
+    setIsExporting(true);
 
     const audioContext = new AudioContext();
     await audioContext.resume();
@@ -267,14 +281,18 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
     const wavUrl = midiBuffer.download();
 
     saveAs(wavUrl, `${data?.title || 'song'}.wav`);
+
+    setIsExporting(false);
   }, [abcRenderOutput, data, handleExportMenuClose]);
 
   const handleMp3Export = useCallback(async () => {
-    handleExportMenuClose();
-
     if (!abcRenderOutput) {
       return;
     }
+
+    handleExportMenuClose();
+
+    setIsExporting(true);
 
     const audioContext = new AudioContext();
     await audioContext.resume();
@@ -306,6 +324,8 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
     const blob = new Blob(mp3, { type: 'audio/mp3' });
 
     saveAs(blob, `${data?.title || 'song'}.mp3`);
+
+    setIsExporting(false);
   }, [abcRenderOutput, data, handleExportMenuClose]);
 
   return (
@@ -327,7 +347,9 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
                   exportMenuOpen ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
                 }
                 onClick={handleExportButtonClick}
+                disabled={!data?.input || isExporting}
               >
+                {isExporting && <Loader size={24} />}
                 Export as
               </Button>
               <Menu
