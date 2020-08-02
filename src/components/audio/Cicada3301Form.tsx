@@ -163,18 +163,6 @@ const Cicada3301Form: FunctionComponent<Cicada3301FormProps> = ({
   const [state, dispatch] = useReducer(reduceCicada3301Form, initialState);
   const [isTempoFocused, setIsTempoFocused] = useState(false);
 
-  const handleInputInput = useCallback<
-    NonNullable<OutlinedInputProps['onInput']>
-  >((event) => {
-    dispatch({
-      type: Cicada3301FormActionType.SET_FIELD,
-      field: 'input',
-      value: (event.target as HTMLTextAreaElement).value
-        .replace(/[^a-z0-9 ]/gi, '')
-        .toUpperCase(),
-    });
-  }, []);
-
   const createTextFieldInputHandler = useCallback(
     <F extends keyof Cicada3301FormState>(
       field: F,
@@ -182,7 +170,7 @@ const Cicada3301Form: FunctionComponent<Cicada3301FormProps> = ({
       dispatch({
         type: Cicada3301FormActionType.SET_FIELD,
         field,
-        value: (event.target as HTMLInputElement).value,
+        value: (event.target as HTMLTextAreaElement | HTMLInputElement).value,
       });
     },
     [],
@@ -227,7 +215,7 @@ const Cicada3301Form: FunctionComponent<Cicada3301FormProps> = ({
             multiline
             rows={4}
             value={state.input}
-            onInput={handleInputInput}
+            onInput={createTextFieldInputHandler('input')}
           />
           <FormHelperText>
             Note: only uppercase letters and digits are supported. Lowercase
