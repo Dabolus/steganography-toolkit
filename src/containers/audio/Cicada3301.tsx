@@ -10,8 +10,6 @@ import { useDebounce } from 'use-debounce';
 
 import ABCJS from 'abcjs';
 
-import { Mp3Encoder } from 'lamejs';
-
 import { saveAs } from 'file-saver';
 
 import { Button, Menu, MenuItem, Box, Grid } from '@material-ui/core';
@@ -32,6 +30,7 @@ import * as Cicada3301Worker from '../../workers/audio/cicada3301.worker';
 
 const {
   computeAbc,
+  encodeMp3,
 } = new (Cicada3301Worker as any)() as typeof Cicada3301Worker;
 
 const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
@@ -122,15 +121,7 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
     setIsExporting(false);
   }, [abcRenderOutput, data, handleExportMenuClose]);
 
-  const handleWavExport = useCallback(async () => {
-    if (!abcRenderOutput) {
-      return;
-    }
-
-    handleExportMenuClose();
-
-    setIsExporting(true);
-
+  const getWavUrl = useCallback(async (): Promise<string> => {
     const audioContext = new AudioContext();
     await audioContext.resume();
 
@@ -146,12 +137,24 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
     });
     await midiBuffer.prime();
 
-    const wavUrl = midiBuffer.download();
+    return midiBuffer.download();
+  }, [abcRenderOutput]);
+
+  const handleWavExport = useCallback(async () => {
+    if (!abcRenderOutput) {
+      return;
+    }
+
+    handleExportMenuClose();
+
+    setIsExporting(true);
+
+    const wavUrl = await getWavUrl();
 
     saveAs(wavUrl, `${data?.title || 'song'}.wav`);
 
     setIsExporting(false);
-  }, [abcRenderOutput, data, handleExportMenuClose]);
+  }, [abcRenderOutput, data, getWavUrl, handleExportMenuClose]);
 
   const handleMp3Export = useCallback(async () => {
     if (!abcRenderOutput) {
@@ -162,39 +165,14 @@ const Cicada3301: FunctionComponent<TopbarLayoutProps> = (props) => {
 
     setIsExporting(true);
 
-    const audioContext = new AudioContext();
-    await audioContext.resume();
+    const wavUrl = await getWavUrl();
 
-    const midiBuffer = new ABCJS.synth.CreateSynth();
-    await midiBuffer.init({
-      visualObj: abcRenderOutput,
-      audioContext,
-      millisecondsPerMeasure: abcRenderOutput.millisecondsPerMeasure(),
-      options: {
-        soundFontUrl: `${process.env.PUBLIC_URL}/sounds/`,
-        program: 0,
-      },
-    });
-    await midiBuffer.prime();
+    const mp3 = await encodeMp3(wavUrl);
 
-    const wavUrl = midiBuffer.download();
-
-    const wavResponse = await fetch(wavUrl);
-
-    const arrayBuffer = await wavResponse.arrayBuffer();
-
-    const int16Array = new Int16Array(arrayBuffer);
-
-    const encoder = new Mp3Encoder(1, 44100, 320);
-
-    const mp3 = [encoder.encodeBuffer(int16Array), encoder.flush()];
-
-    const blob = new Blob(mp3, { type: 'audio/mp3' });
-
-    saveAs(blob, `${data?.title || 'song'}.mp3`);
+    saveAs(mp3, `${data?.title || 'song'}.mp3`);
 
     setIsExporting(false);
-  }, [abcRenderOutput, data, handleExportMenuClose]);
+  }, [abcRenderOutput, data, getWavUrl, handleExportMenuClose]);
 
   return (
     <TopbarLayout title="Cicada 3301" {...props}>

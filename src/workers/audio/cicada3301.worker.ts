@@ -7,6 +7,8 @@ import { nextPrime } from '../../helpers';
 
 import letterNotesMapping from '../../static/cicada3301/letterNotesMapping.json';
 
+import { Mp3Encoder } from 'lamejs';
+
 // TODO: this code was rushed and needs to be improved
 
 enum TieType {
@@ -145,4 +147,18 @@ export const computeAbc = async ({
   }, '');
 
   return `${resultStr}${computedAbc}`;
+};
+
+export const encodeMp3 = async (wavUrl: string): Promise<Blob> => {
+  const wavResponse = await fetch(wavUrl);
+
+  const arrayBuffer = await wavResponse.arrayBuffer();
+
+  const int16Array = new Int16Array(arrayBuffer);
+
+  const encoder = new Mp3Encoder(1, 44100, 320);
+
+  const mp3 = [encoder.encodeBuffer(int16Array), encoder.flush()];
+
+  return new Blob(mp3, { type: 'audio/mp3' });
 };
