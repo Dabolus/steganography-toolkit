@@ -8,6 +8,7 @@ import {
   makeStyles,
   useMediaQuery,
   useTheme,
+  Link,
 } from '@material-ui/core';
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -19,6 +20,32 @@ export interface TopbarLayoutProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+  },
+  appBar: {
+    flex: '0 0 auto',
+  },
+  content: {
+    flex: '1 1 auto',
+  },
+  footer: {
+    flex: '0 0 auto',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 56,
+    background: theme.palette.background.paper,
+    color: theme.palette.text.secondary,
+    borderTop: `1px solid ${theme.palette.divider}`,
+
+    '& a, & strong': {
+      fontWeight: theme.typography.fontWeightBold,
+      color: theme.palette.text.primary,
+    },
+  },
   menuButton: {
     marginRight: theme.spacing(0.5),
   },
@@ -28,16 +55,6 @@ const useStyles = makeStyles((theme) => ({
 
     [theme.breakpoints.up('sm')]: {
       width: 'min(100vw - 64px, 320px)',
-    },
-  },
-  content: {
-    width: '100vw',
-    minHeight: '100vh',
-    float: 'right',
-    position: 'relative',
-
-    [theme.breakpoints.up('sm')]: {
-      width: 'calc(100vw - min(100vw - 64px, 320px))',
     },
   },
 }));
@@ -59,8 +76,8 @@ const TopbarLayout: FunctionComponent<TopbarLayoutProps> = ({
   }, [onMenuButtonClick]);
 
   return (
-    <>
-      <AppBar position="static">
+    <div className={classes.root}>
+      <AppBar position="static" className={classes.appBar}>
         <Toolbar>
           {!isNarrow && (
             <IconButton
@@ -79,8 +96,17 @@ const TopbarLayout: FunctionComponent<TopbarLayoutProps> = ({
         {topbarContent}
       </AppBar>
 
-      {children}
-    </>
+      <div className={classes.content}>{children}</div>
+
+      <footer className={classes.footer}>
+        <div>
+          Brought to you with <strong>❤</strong> by{' '}
+          <Link href="https://github.com/Dabolus" target="my-github">
+            Dabolus
+          </Link>
+        </div>
+      </footer>
+    </div>
   );
 };
 export default TopbarLayout;
