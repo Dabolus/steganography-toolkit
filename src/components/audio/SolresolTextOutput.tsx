@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
   translation: {
     appearance: 'none',
     cursor: 'pointer',
+    fontSize: '1rem',
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: '4px',
     background: 'transparent',
