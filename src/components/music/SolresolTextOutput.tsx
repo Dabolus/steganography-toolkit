@@ -26,8 +26,9 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '4px',
     lineHeight: '1.1876em',
     border: '1px solid rgba(0, 0, 0, 0.23)',
-    height: '7rem',
+    height: '8.25rem',
     cursor: 'text',
+    overflowX: 'auto',
   },
   translation: {
     appearance: 'none',
@@ -39,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
     outline: 'none',
     transition: '.3s border-color',
     fontWeight: theme.typography.fontWeightBold,
+    lineHeight: 0.9,
 
     '&:hover, &:focus': {
       borderColor: theme.palette.text.disabled,

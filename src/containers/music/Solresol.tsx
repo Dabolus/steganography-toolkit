@@ -75,7 +75,7 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
 
   return (
     <TopbarLayout title="Solresol" {...props}>
-      <Page>
+      <Page size="md">
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <Grid container spacing={1}>
@@ -86,7 +86,7 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
                   </Box>
                   <OutlinedInput
                     multiline
-                    rows={4}
+                    rows={5}
                     value={input}
                     onInput={handleInput}
                   />
