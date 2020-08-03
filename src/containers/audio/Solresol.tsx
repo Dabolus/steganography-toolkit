@@ -22,6 +22,7 @@ import TopbarLayout, { TopbarLayoutProps } from '../../components/TopbarLayout';
 import Page from '../../components/Page';
 
 import * as SolresolWorker from '../../workers/audio/solresol.worker';
+import SolresolTextOutput from '../../components/audio/SolresolTextOutput';
 
 const {
   computeOutput,
@@ -30,7 +31,7 @@ const {
 const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [input, setInput] = useState<string>('');
   const [hint, setHint] = useState<string>('');
-  const [output, setOutput] = useState<string>('');
+  const [output, setOutput] = useState<SolresolWorker.SolresolOutput>([]);
 
   const [debouncedInput] = useDebounce(input, 300);
 
@@ -38,7 +39,7 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
     const compute = async () => {
       if (!debouncedInput) {
         setHint('');
-        setOutput('');
+        setOutput([]);
         return;
       }
 
@@ -65,6 +66,13 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
     setInput(hint);
   }, [hint]);
 
+  const handleOutputChange = useCallback(
+    (output: SolresolWorker.SolresolOutput) => {
+      setOutput(output);
+    },
+    [],
+  );
+
   return (
     <TopbarLayout title="Solresol" {...props}>
       <Page>
@@ -88,7 +96,12 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
                 <Grid item xs={12}>
                   <Typography variant="subtitle1">
                     Did you mean:{' '}
-                    <Link color="secondary" onClick={handleHintClick}>
+                    <Link
+                      color="secondary"
+                      role="button"
+                      style={{ cursor: 'pointer' }}
+                      onClick={handleHintClick}
+                    >
                       {hint}
                     </Link>
                   </Typography>
@@ -101,7 +114,10 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
               <Box marginBottom={1} clone>
                 <FormLabel>Output</FormLabel>
               </Box>
-              <OutlinedInput multiline readOnly rows={4} value={output} />
+              <SolresolTextOutput
+                value={output}
+                onChange={handleOutputChange}
+              />
             </FormControl>
           </Grid>
         </Grid>
