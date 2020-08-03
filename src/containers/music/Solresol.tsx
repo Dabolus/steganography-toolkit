@@ -21,8 +21,8 @@ import { useDebounce } from 'use-debounce';
 import TopbarLayout, { TopbarLayoutProps } from '../../components/TopbarLayout';
 import Page from '../../components/Page';
 
-import * as SolresolWorker from '../../workers/audio/solresol.worker';
-import SolresolTextOutput from '../../components/audio/SolresolTextOutput';
+import * as SolresolWorker from '../../workers/music/solresol.worker';
+import SolresolTextOutput from '../../components/music/SolresolTextOutput';
 
 const {
   computeOutput,

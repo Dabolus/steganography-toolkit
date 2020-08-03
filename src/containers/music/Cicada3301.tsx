@@ -22,11 +22,11 @@ import Page from '../../components/Page';
 import Cicada3301Form, {
   Cicada3301FormProps,
   Cicada3301FormValue,
-} from '../../components/audio/Cicada3301Form';
-import Abc, { AbcProps } from '../../components/audio/Abc';
+} from '../../components/music/Cicada3301Form';
+import Abc, { AbcProps } from '../../components/music/Abc';
 import Loader from '../../components/Loader';
 
-import * as Cicada3301Worker from '../../workers/audio/cicada3301.worker';
+import * as Cicada3301Worker from '../../workers/music/cicada3301.worker';
 
 const {
   computeAbc,

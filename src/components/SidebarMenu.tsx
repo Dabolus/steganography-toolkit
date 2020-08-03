@@ -20,7 +20,7 @@ import {
 import HomeIcon from '@material-ui/icons/Home';
 import TitleIcon from '@material-ui/icons/Title';
 import ImageIcon from '@material-ui/icons/Image';
-import AudiotrackIcon from '@material-ui/icons/Audiotrack';
+import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
@@ -87,9 +87,9 @@ const MENU_ITEMS: MenuItem[] = [
     ],
   },
   {
-    key: 'audio',
-    title: 'Audio',
-    icon: <AudiotrackIcon />,
+    key: 'music',
+    title: 'Music',
+    icon: <MusicNoteIcon />,
     subitems: [
       {
         key: 'solresol',
@@ -106,7 +106,7 @@ const MENU_ITEMS: MenuItem[] = [
 interface OpenedTogglesState {
   text?: boolean;
   image?: boolean;
-  audio?: boolean;
+  music?: boolean;
 }
 
 interface SidebarMenuProps {
@@ -114,7 +114,7 @@ interface SidebarMenuProps {
 }
 
 const isToggleablePage = (key: string): key is keyof OpenedTogglesState =>
-  key === 'text' || key === 'image' || key === 'audio';
+  key === 'text' || key === 'image' || key === 'music';
 
 const SidebarMenu: FunctionComponent<SidebarMenuProps> = ({ onItemClick }) => {
   const classes = useStyles();

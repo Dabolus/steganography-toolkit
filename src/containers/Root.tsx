@@ -16,7 +16,7 @@ import SidebarLayout from '../components/SidebarLayout';
 import SidebarMenu from '../components/SidebarMenu';
 import Loader from '../components/Loader';
 
-import AudioRouter from './audio/AudioRouter';
+import MusicRouter from './music/MusicRouter';
 
 const Home = lazy(() => import('../components/Home'));
 
@@ -60,8 +60,8 @@ const Root: FunctionComponent = () => {
 
             <Route path="/image">Image</Route>
 
-            <Route path="/audio">
-              <AudioRouter onMenuButtonClick={handleMenuButtonClick} />
+            <Route path="/music">
+              <MusicRouter onMenuButtonClick={handleMenuButtonClick} />
             </Route>
 
             <Redirect to="/" />

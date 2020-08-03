@@ -11,7 +11,7 @@ import { makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
 import type {
   SolresolOutput,
   SolresolOutputItem,
-} from '../../workers/audio/solresol.worker';
+} from '../../workers/music/solresol.worker';
 
 export interface SolresolTextOutputProps {
   value?: SolresolOutput;

@@ -7,7 +7,7 @@ import { TopbarLayoutProps } from '../../components/TopbarLayout';
 const Solresol = lazy(() => import('./Solresol'));
 const Cicada3301 = lazy(() => import('./Cicada3301'));
 
-const AudioRouter: FunctionComponent<TopbarLayoutProps> = (props) => {
+const MusicRouter: FunctionComponent<TopbarLayoutProps> = (props) => {
   const { path } = useRouteMatch();
 
   return (
@@ -37,4 +37,4 @@ const AudioRouter: FunctionComponent<TopbarLayoutProps> = (props) => {
   );
 };
 
-export default AudioRouter;
+export default MusicRouter;

@@ -1,7 +1,7 @@
 import type {
   Language,
   Cicada3301FormValue,
-} from '../../components/audio/Cicada3301Form';
+} from '../../components/music/Cicada3301Form';
 
 import { nextPrime } from '../../helpers';
 
