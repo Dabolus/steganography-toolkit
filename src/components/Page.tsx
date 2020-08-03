@@ -1,12 +1,17 @@
 import React, { FunctionComponent } from 'react';
 
-import { Box, BoxProps, makeStyles } from '@material-ui/core';
+import { Box, BoxProps, makeStyles, Theme } from '@material-ui/core';
+import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+export interface PageProps extends BoxProps {
+  size?: number | Breakpoint;
+}
+
+const useStyles = makeStyles<Theme, PageProps>((theme) => ({
+  root: ({ size = 'sm' }) => ({
     padding: '2rem 3rem',
     background: theme.palette.background.paper,
-    maxWidth: 640,
+    maxWidth: typeof size === 'number' ? size : theme.breakpoints.width(size),
     margin: 0,
 
     [theme.breakpoints.up('md')]: {
@@ -15,11 +20,11 @@ const useStyles = makeStyles((theme) => ({
       boxShadow:
         '0 .06rem .065rem 0 rgba(0, 0, 0, 0.14), 0 .003rem .15rem 0 rgba(0, 0, 0, 0.12), 0 .09rem .0035rem -.065rem rgba(0, 0, 0, 0.2)',
     },
-  },
+  }),
 }));
 
-const Page: FunctionComponent<BoxProps> = (props) => {
-  const classes = useStyles();
+const Page: FunctionComponent<PageProps> = (props) => {
+  const classes = useStyles(props);
 
   return <Box component="section" className={classes.root} {...props} />;
 };
