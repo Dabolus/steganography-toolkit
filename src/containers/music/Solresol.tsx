@@ -154,8 +154,8 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
                     <option value="abbreviated">Abbreviated</option>
                     <option value="english">English</option>
                     <option value="numeric">Numeric</option>
-                    {/* <option value="color">Color</option>
-                    <option value="stenographic">Stenographic</option> */}
+                    <option value="color">Color</option>
+                    {/* <option value="stenographic">Stenographic</option> */}
                   </Select>
                 </FormControl>
               </Box>

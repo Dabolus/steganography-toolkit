@@ -4,9 +4,16 @@ import React, {
   useCallback,
   MouseEventHandler,
   useState,
+  ReactNode,
 } from 'react';
 
-import { makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
+import {
+  makeStyles,
+  Menu,
+  MenuItem,
+  Typography,
+  Theme,
+} from '@material-ui/core';
 
 import type {
   SolresolOutput as SolresolWorkerOutput,
@@ -27,88 +34,142 @@ export interface SolresolOutputProps {
   onChange?(output: SolresolWorkerOutput): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    whiteSpace: 'pre-wrap',
-    padding: '18.5px 14px',
-    fontSize: '1rem',
-    borderRadius: '4px',
-    lineHeight: '1.1876em',
-    border: '1px solid rgba(0, 0, 0, 0.23)',
-    height: '8.25rem',
-    cursor: 'text',
-    overflowX: 'auto',
-  },
-  translation: {
-    appearance: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: '4px',
-    background: 'transparent',
-    outline: 'none',
-    transition: '.3s border-color',
-    fontWeight: theme.typography.fontWeightBold,
-    lineHeight: 0.9,
-
-    '&:hover, &:focus': {
-      borderColor: theme.palette.text.disabled,
+const useStyles = makeStyles<Theme, Pick<SolresolOutputProps, 'type'>>(
+  (theme) => ({
+    container: {
+      whiteSpace: 'pre-wrap',
+      padding: '18.5px 14px',
+      fontSize: '1rem',
+      borderRadius: '4px',
+      lineHeight: '1.1876em',
+      border: '1px solid rgba(0, 0, 0, 0.23)',
+      height: '8.25rem',
+      cursor: 'text',
+      overflowX: 'auto',
     },
-  },
-  menu: {
-    width: 280,
-    minHeight: 72,
-  },
-  alternative: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
+    translation: ({ type }) => ({
+      appearance: 'none',
+      cursor: 'pointer',
+      fontSize: '1rem',
+      border: `1px solid ${theme.palette.divider}`,
+      borderRadius: '4px',
+      background: 'transparent',
+      outline: 'none',
+      transition: '.3s border-color',
+      fontWeight: theme.typography.fontWeightBold,
+      lineHeight: type === 'color' ? 0 : 0.9,
+      ...(type === 'color' && { padding: 0 }),
 
-    '& > *': {
-      whiteSpace: 'normal',
+      '&:hover, &:focus': {
+        borderColor: theme.palette.text.disabled,
+      },
+    }),
+    colorTranslation: {
+      height: '.8rem',
+      borderRadius: '3px',
     },
-  },
-}));
+    menu: {
+      width: 280,
+      minHeight: 72,
+    },
+    alternative: {
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
 
-const fullSolresolCodes = [null, 'do', 're', 'mi', 'fa', 'sol', 'la', 'si'];
-const abbreviatedSolresolCodes = [null, 'd', 'r', 'm', 'f', 'so', 'l', 's'];
-const englishSolresolCodes = [null, 'C', 'D', 'E', 'F', 'G', 'A', 'B'];
+      '& > *': {
+        whiteSpace: 'normal',
+      },
+    },
+  }),
+);
+
+const fullSolresolCodes = [
+  undefined,
+  'do',
+  're',
+  'mi',
+  'fa',
+  'sol',
+  'la',
+  'si',
+];
+const abbreviatedSolresolCodes = [
+  undefined,
+  'd',
+  'r',
+  'm',
+  'f',
+  'so',
+  'l',
+  's',
+];
+const englishSolresolCodes = [undefined, 'C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const colorSolresolCodes = [
+  undefined,
+  'red',
+  'orange',
+  'yellow',
+  'green',
+  'blue',
+  'indigo',
+  'violet',
+];
+
+const convertToSolresolForm = (
+  word: string,
+  type: SolresolOutputType,
+  classes: Record<string, string>,
+): ReactNode => {
+  switch (type) {
+    case 'full':
+      return [...word].map((code) => fullSolresolCodes[Number(code)]);
+    case 'abbreviated':
+      return [...word].map((code) => abbreviatedSolresolCodes[Number(code)]);
+    case 'english':
+      return [...word].map((code) => englishSolresolCodes[Number(code)]);
+    case 'numeric':
+      return word;
+    case 'color':
+      return (
+        <svg
+          viewBox={`0 0 ${word.length * 3} 4`}
+          role="img"
+          aria-labelledby={`${word}-title`}
+          className={classes.colorTranslation}
+        >
+          <title id={`${word}-title`}>
+            {convertToSolresolForm(word, 'full', classes)}
+          </title>
+          {[...word].map((code, index) => (
+            <rect
+              key={index}
+              width="3"
+              height="4"
+              x={index * 3}
+              y="0"
+              fill={colorSolresolCodes[Number(code)]}
+            />
+          ))}
+        </svg>
+      );
+    case 'stenographic':
+      // TODO
+      return;
+  }
+};
 
 const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
   type = 'full',
   value,
   onChange,
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({ type });
 
   const [selectedTranslation, setSelectedTranslation] = useState<{
     index: number;
     anchor: HTMLElement;
   }>();
-
-  const convertToSolresolForm = useCallback(
-    (word: string) => {
-      switch (type) {
-        case 'full':
-          return [...word].map((code) => fullSolresolCodes[Number(code)]);
-        case 'abbreviated':
-          return [...word].map(
-            (code) => abbreviatedSolresolCodes[Number(code)],
-          );
-        case 'english':
-          return [...word].map((code) => englishSolresolCodes[Number(code)]);
-        case 'numeric':
-          return word;
-        case 'color':
-          // TODO
-          return;
-        case 'stenographic':
-          // TODO
-          return;
-      }
-    },
-    [type],
-  );
 
   const createTranslationClickHandler = useCallback(
     (index: number): MouseEventHandler<HTMLElement> => (event) => {
@@ -169,6 +230,8 @@ const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
             >
               {convertToSolresolForm(
                 part.find(({ preferred }) => preferred)?.solresol || '',
+                type,
+                classes,
               )}
             </button>
           );
@@ -202,7 +265,9 @@ const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
               >
                 <div className={classes.alternative}>
                   <Typography variant="subtitle1">
-                    <strong>{convertToSolresolForm(solresol)}</strong>
+                    <strong>
+                      {convertToSolresolForm(solresol, type, classes)}
+                    </strong>
                   </Typography>
                   <Typography variant="caption">
                     {english.join(' · ')}
