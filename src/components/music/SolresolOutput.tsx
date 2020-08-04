@@ -13,14 +13,16 @@ import type {
   SolresolOutputItem,
 } from '../../workers/music/solresol.worker';
 
+export type SolresolOutputType =
+  | 'full'
+  | 'abbreviated'
+  | 'english'
+  | 'numeric'
+  | 'color'
+  | 'stenographic';
+
 export interface SolresolOutputProps {
-  type?:
-    | 'full'
-    | 'abbreviated'
-    | 'english'
-    | 'numeric'
-    | 'color'
-    | 'stenographic';
+  type?: SolresolOutputType;
   value?: SolresolWorkerOutput;
   onChange?(output: SolresolWorkerOutput): void;
 }

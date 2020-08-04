@@ -14,6 +14,9 @@ import {
   FormLabel,
   Box,
   OutlinedInput,
+  Select,
+  InputLabel,
+  SelectProps,
 } from '@material-ui/core';
 
 import { useDebounce } from 'use-debounce';
@@ -22,7 +25,9 @@ import TopbarLayout, { TopbarLayoutProps } from '../../components/TopbarLayout';
 import Page from '../../components/Page';
 
 import * as SolresolWorker from '../../workers/music/solresol.worker';
-import SolresolOutput from '../../components/music/SolresolOutput';
+import SolresolOutput, {
+  SolresolOutputType,
+} from '../../components/music/SolresolOutput';
 
 const {
   computeOutput,
@@ -32,6 +37,7 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [input, setInput] = useState<string>('');
   const [hint, setHint] = useState<string>('');
   const [output, setOutput] = useState<SolresolWorker.SolresolOutput>([]);
+  const [outputType, setOutputType] = useState<SolresolOutputType>('full');
 
   const [debouncedInput] = useDebounce(input, 300);
 
@@ -73,6 +79,12 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
     [],
   );
 
+  const handleOutputTypeChange = useCallback<
+    NonNullable<SelectProps['onChange']>
+  >((event) => {
+    setOutputType(event.target.value as SolresolOutputType);
+  }, []);
+
   return (
     <TopbarLayout title="Solresol" {...props}>
       <Page size="md">
@@ -81,7 +93,12 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
             <Grid container spacing={1}>
               <Grid item xs={12}>
                 <FormControl fullWidth>
-                  <Box marginBottom={1} clone>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    marginBottom={1}
+                    height={48}
+                  >
                     <FormLabel>Input</FormLabel>
                   </Box>
                   <OutlinedInput
@@ -111,11 +128,39 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
-              <Box marginBottom={1} clone>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                marginBottom={1}
+                height={48}
+              >
                 <FormLabel>Output</FormLabel>
+                <FormControl>
+                  <InputLabel
+                    shrink
+                    id="demo-simple-select-placeholder-label-label"
+                  >
+                    Type
+                  </InputLabel>
+                  <Select
+                    native
+                    labelId="demo-simple-select-placeholder-label-label"
+                    id="demo-simple-select-placeholder-label"
+                    value={outputType}
+                    onChange={handleOutputTypeChange}
+                  >
+                    <option value="full">Full</option>
+                    <option value="abbreviated">Abbreviated</option>
+                    <option value="english">English</option>
+                    <option value="numeric">Numeric</option>
+                    {/* <option value="color">Color</option>
+                    <option value="stenographic">Stenographic</option> */}
+                  </Select>
+                </FormControl>
               </Box>
               <SolresolOutput
-                type="full"
+                type={outputType}
                 value={output}
                 onChange={handleOutputChange}
               />
