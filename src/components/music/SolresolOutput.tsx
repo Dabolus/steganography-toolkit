@@ -9,13 +9,20 @@ import React, {
 import { makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
 
 import type {
-  SolresolOutput,
+  SolresolOutput as SolresolWorkerOutput,
   SolresolOutputItem,
 } from '../../workers/music/solresol.worker';
 
-export interface SolresolTextOutputProps {
-  value?: SolresolOutput;
-  onChange?(output: SolresolOutput): void;
+export interface SolresolOutputProps {
+  type?:
+    | 'full'
+    | 'abbreviated'
+    | 'english'
+    | 'numeric'
+    | 'color'
+    | 'stenographic';
+  value?: SolresolWorkerOutput;
+  onChange?(output: SolresolWorkerOutput): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +68,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SolresolTextOutput: FunctionComponent<SolresolTextOutputProps> = ({
+const fullSolresolCodes = [null, 'do', 're', 'mi', 'fa', 'sol', 'la', 'si'];
+const abbreviatedSolresolCodes = [null, 'd', 'r', 'm', 'f', 'so', 'l', 's'];
+const englishSolresolCodes = [null, 'C', 'D', 'E', 'F', 'G', 'A', 'B'];
+
+const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
+  type = 'full',
   value,
   onChange,
 }) => {
@@ -71,6 +83,30 @@ const SolresolTextOutput: FunctionComponent<SolresolTextOutputProps> = ({
     index: number;
     anchor: HTMLElement;
   }>();
+
+  const convertToSolresolForm = useCallback(
+    (word: string) => {
+      switch (type) {
+        case 'full':
+          return [...word].map((code) => fullSolresolCodes[Number(code)]);
+        case 'abbreviated':
+          return [...word].map(
+            (code) => abbreviatedSolresolCodes[Number(code)],
+          );
+        case 'english':
+          return [...word].map((code) => englishSolresolCodes[Number(code)]);
+        case 'numeric':
+          return word;
+        case 'color':
+          // TODO
+          return;
+        case 'stenographic':
+          // TODO
+          return;
+      }
+    },
+    [type],
+  );
 
   const createTranslationClickHandler = useCallback(
     (index: number): MouseEventHandler<HTMLElement> => (event) => {
@@ -129,7 +165,9 @@ const SolresolTextOutput: FunctionComponent<SolresolTextOutputProps> = ({
               onClick={createTranslationClickHandler(index)}
               className={classes.translation}
             >
-              {part.find(({ preferred }) => preferred)?.solresol}
+              {convertToSolresolForm(
+                part.find(({ preferred }) => preferred)?.solresol || '',
+              )}
             </button>
           );
         })}
@@ -162,7 +200,7 @@ const SolresolTextOutput: FunctionComponent<SolresolTextOutputProps> = ({
               >
                 <div className={classes.alternative}>
                   <Typography variant="subtitle1">
-                    <strong>{solresol}</strong>
+                    <strong>{convertToSolresolForm(solresol)}</strong>
                   </Typography>
                   <Typography variant="caption">
                     {english.join(' · ')}
@@ -176,4 +214,4 @@ const SolresolTextOutput: FunctionComponent<SolresolTextOutputProps> = ({
   );
 };
 
-export default SolresolTextOutput;
+export default SolresolOutput;

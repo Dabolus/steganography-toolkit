@@ -22,7 +22,7 @@ import TopbarLayout, { TopbarLayoutProps } from '../../components/TopbarLayout';
 import Page from '../../components/Page';
 
 import * as SolresolWorker from '../../workers/music/solresol.worker';
-import SolresolTextOutput from '../../components/music/SolresolTextOutput';
+import SolresolOutput from '../../components/music/SolresolOutput';
 
 const {
   computeOutput,
@@ -114,7 +114,8 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
               <Box marginBottom={1} clone>
                 <FormLabel>Output</FormLabel>
               </Box>
-              <SolresolTextOutput
+              <SolresolOutput
+                type="full"
                 value={output}
                 onChange={handleOutputChange}
               />
