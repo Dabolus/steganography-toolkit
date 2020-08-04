@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flex: '1 1 auto',
+    display: 'flex',
+    flexDirection: 'column',
   },
   footer: {
     flex: '0 0 auto',

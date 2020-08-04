@@ -11,10 +11,13 @@ const useStyles = makeStyles<Theme, PageProps>((theme) => ({
   root: ({ size = 'sm' }) => ({
     padding: '2rem 3rem',
     background: theme.palette.background.paper,
+    width: '100%',
     maxWidth: typeof size === 'number' ? size : theme.breakpoints.width(size),
     margin: 0,
+    flex: '1 1 auto',
 
     [theme.breakpoints.up('md')]: {
+      flex: '0 0 auto',
       margin: `${theme.spacing(3)}px auto`,
       borderRadius: '.5rem',
       boxShadow:
