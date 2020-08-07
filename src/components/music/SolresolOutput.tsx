@@ -16,8 +16,8 @@ import {
 } from '@material-ui/core';
 
 import type {
-  SolresolOutput as SolresolWorkerOutput,
-  SolresolOutputItem,
+  TranslationOutput as SolresolWorkerOutput,
+  TranslationOutputItem,
 } from '../../workers/music/solresol.worker';
 
 export type SolresolOutputType =
@@ -32,6 +32,7 @@ export interface SolresolOutputProps {
   type?: SolresolOutputType;
   value?: SolresolWorkerOutput;
   onChange?(output: SolresolWorkerOutput): void;
+  formatTranslation?(word: string, classes: Record<string, string>): ReactNode;
 }
 
 const useStyles = makeStyles<Theme, Pick<SolresolOutputProps, 'type'>>(
@@ -84,85 +85,11 @@ const useStyles = makeStyles<Theme, Pick<SolresolOutputProps, 'type'>>(
   }),
 );
 
-const fullSolresolCodes = [
-  undefined,
-  'do',
-  're',
-  'mi',
-  'fa',
-  'sol',
-  'la',
-  'si',
-];
-const abbreviatedSolresolCodes = [
-  undefined,
-  'd',
-  'r',
-  'm',
-  'f',
-  'so',
-  'l',
-  's',
-];
-const englishSolresolCodes = [undefined, 'C', 'D', 'E', 'F', 'G', 'A', 'B'];
-const colorSolresolCodes = [
-  undefined,
-  'red',
-  'orange',
-  'yellow',
-  'green',
-  'blue',
-  'indigo',
-  'violet',
-];
-
-const convertToSolresolForm = (
-  word: string,
-  type: SolresolOutputType,
-  classes: Record<string, string>,
-): ReactNode => {
-  switch (type) {
-    case 'full':
-      return [...word].map((code) => fullSolresolCodes[Number(code)]);
-    case 'abbreviated':
-      return [...word].map((code) => abbreviatedSolresolCodes[Number(code)]);
-    case 'english':
-      return [...word].map((code) => englishSolresolCodes[Number(code)]);
-    case 'numeric':
-      return word;
-    case 'color':
-      return (
-        <svg
-          viewBox={`0 0 ${word.length * 3} 4`}
-          role="img"
-          aria-labelledby={`${word}-title`}
-          className={classes.colorTranslation}
-        >
-          <title id={`${word}-title`}>
-            {convertToSolresolForm(word, 'full', classes)}
-          </title>
-          {[...word].map((code, index) => (
-            <rect
-              key={index}
-              width="3"
-              height="4"
-              x={index * 3}
-              y="0"
-              fill={colorSolresolCodes[Number(code)]}
-            />
-          ))}
-        </svg>
-      );
-    case 'stenographic':
-      // TODO
-      return;
-  }
-};
-
 const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
   type = 'full',
   value,
   onChange,
+  formatTranslation = (word) => word,
 }) => {
   const classes = useStyles({ type });
 
@@ -193,7 +120,7 @@ const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
 
       onChange([
         ...value.slice(0, selectedTranslation.index),
-        (value[selectedTranslation.index] as SolresolOutputItem[]).map(
+        (value[selectedTranslation.index] as TranslationOutputItem[]).map(
           (item, itemIndex) => ({
             ...item,
             preferred: itemIndex === index,
@@ -228,9 +155,8 @@ const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
               onClick={createTranslationClickHandler(index)}
               className={classes.translation}
             >
-              {convertToSolresolForm(
+              {formatTranslation(
                 part.find(({ preferred }) => preferred)?.solresol || '',
-                type,
                 classes,
               )}
             </button>
@@ -256,7 +182,7 @@ const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
       >
         {value &&
           selectedTranslation &&
-          (value[selectedTranslation.index] as SolresolOutputItem[]).map(
+          (value[selectedTranslation.index] as TranslationOutputItem[]).map(
             ({ solresol, english, preferred }, index) => (
               <MenuItem
                 key={solresol}
@@ -265,9 +191,7 @@ const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
               >
                 <div className={classes.alternative}>
                   <Typography variant="subtitle1">
-                    <strong>
-                      {convertToSolresolForm(solresol, type, classes)}
-                    </strong>
+                    <strong>{formatTranslation(solresol, classes)}</strong>
                   </Typography>
                   <Typography variant="caption">
                     {english.join(' · ')}

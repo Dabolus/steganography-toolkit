@@ -3,6 +3,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  ReactNode,
 } from 'react';
 
 import {
@@ -27,16 +28,92 @@ import Page from '../../components/Page';
 import * as SolresolWorker from '../../workers/music/solresol.worker';
 import SolresolOutput, {
   SolresolOutputType,
+  SolresolOutputProps,
 } from '../../components/music/SolresolOutput';
 
 const {
   computeOutput,
 } = new (SolresolWorker as any)() as typeof SolresolWorker;
 
+const fullSolresolCodes = [
+  undefined,
+  'do',
+  're',
+  'mi',
+  'fa',
+  'sol',
+  'la',
+  'si',
+];
+const abbreviatedSolresolCodes = [
+  undefined,
+  'd',
+  'r',
+  'm',
+  'f',
+  'so',
+  'l',
+  's',
+];
+const englishSolresolCodes = [undefined, 'C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const colorSolresolCodes = [
+  undefined,
+  'red',
+  'orange',
+  'yellow',
+  'green',
+  'blue',
+  'indigo',
+  'violet',
+];
+
+const convertToSolresolForm = (
+  word: string,
+  classes: Record<string, string>,
+  type: SolresolOutputType,
+): ReactNode => {
+  switch (type) {
+    case 'full':
+      return [...word].map((code) => fullSolresolCodes[Number(code)]);
+    case 'abbreviated':
+      return [...word].map((code) => abbreviatedSolresolCodes[Number(code)]);
+    case 'english':
+      return [...word].map((code) => englishSolresolCodes[Number(code)]);
+    case 'numeric':
+      return word;
+    case 'color':
+      return (
+        <svg
+          viewBox={`0 0 ${word.length * 3} 4`}
+          role="img"
+          aria-labelledby={`${word}-title`}
+          className={classes.colorTranslation}
+        >
+          <title id={`${word}-title`}>
+            {convertToSolresolForm(word, classes, 'full')}
+          </title>
+          {[...word].map((code, index) => (
+            <rect
+              key={index}
+              width="3"
+              height="4"
+              x={index * 3}
+              y="0"
+              fill={colorSolresolCodes[Number(code)]}
+            />
+          ))}
+        </svg>
+      );
+    case 'stenographic':
+      // TODO
+      return;
+  }
+};
+
 const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [input, setInput] = useState<string>('');
   const [hint, setHint] = useState<string>('');
-  const [output, setOutput] = useState<SolresolWorker.SolresolOutput>([]);
+  const [output, setOutput] = useState<SolresolWorker.TranslationOutput>([]);
   const [outputType, setOutputType] = useState<SolresolOutputType>('full');
 
   const [debouncedInput] = useDebounce(input, 300);
@@ -73,7 +150,7 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   }, [hint]);
 
   const handleOutputChange = useCallback(
-    (output: SolresolWorker.SolresolOutput) => {
+    (output: SolresolWorker.TranslationOutput) => {
       setOutput(output);
     },
     [],
@@ -84,6 +161,12 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   >((event) => {
     setOutputType(event.target.value as SolresolOutputType);
   }, []);
+
+  const formatTranslation = useCallback<
+    NonNullable<SolresolOutputProps['formatTranslation']>
+  >((word, classes) => convertToSolresolForm(word, classes, outputType), [
+    outputType,
+  ]);
 
   return (
     <TopbarLayout title="Solresol" {...props}>
@@ -163,6 +246,7 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
                 type={outputType}
                 value={output}
                 onChange={handleOutputChange}
+                formatTranslation={formatTranslation}
               />
             </FormControl>
           </Grid>

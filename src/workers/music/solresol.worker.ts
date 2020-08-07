@@ -17,21 +17,21 @@ const fuse = new Fuse<{ solresol: string; english: string }>(
   },
 );
 
-export interface SolresolOutputItem {
+export interface TranslationOutputItem {
   solresol: string;
   english: string[];
   preferred?: boolean;
 }
 
-export type SolresolOutput = (string | SolresolOutputItem[])[];
+export type TranslationOutput = (string | TranslationOutputItem[])[];
 
 export const computeOutput = async (
   input: string,
 ): Promise<{
-  output: SolresolOutput;
+  output: TranslationOutput;
   hint: string;
 }> => {
-  const output: SolresolOutput = [];
+  const output: TranslationOutput = [];
   let hint = input;
 
   let previousIndex = 0;
@@ -44,7 +44,7 @@ export const computeOutput = async (
   ) {
     const [word] = matches;
 
-    const translations: SolresolOutputItem[] = solresolDictionary.filter(
+    const translations: TranslationOutputItem[] = solresolDictionary.filter(
       // TODO: remove this optional chaining when dictionary is completed
       ({ english }) => english?.includes(word.toLowerCase()),
     );
