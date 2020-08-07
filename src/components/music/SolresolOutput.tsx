@@ -18,15 +18,8 @@ import {
 import type {
   TranslationOutput as SolresolWorkerOutput,
   TranslationOutputItem,
+  SolresolOutputType,
 } from '../../workers/music/solresol.worker';
-
-export type SolresolOutputType =
-  | 'full'
-  | 'abbreviated'
-  | 'english'
-  | 'numeric'
-  | 'color'
-  | 'stenographic';
 
 export interface SolresolOutputProps {
   type?: SolresolOutputType;

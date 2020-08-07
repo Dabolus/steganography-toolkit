@@ -18,7 +18,10 @@ import {
   Select,
   InputLabel,
   SelectProps,
+  IconButton,
 } from '@material-ui/core';
+
+import SwapHorizIcon from '@material-ui/icons/SwapHoriz';
 
 import { useDebounce } from 'use-debounce';
 
@@ -27,12 +30,12 @@ import Page from '../../components/Page';
 
 import * as SolresolWorker from '../../workers/music/solresol.worker';
 import SolresolOutput, {
-  SolresolOutputType,
   SolresolOutputProps,
 } from '../../components/music/SolresolOutput';
 
 const {
-  computeOutput,
+  computeSolresolOutput,
+  computeEnglishOutput,
 } = new (SolresolWorker as any)() as typeof SolresolWorker;
 
 const fullSolresolCodes = [
@@ -70,7 +73,7 @@ const colorSolresolCodes = [
 const convertToSolresolForm = (
   word: string,
   classes: Record<string, string>,
-  type: SolresolOutputType,
+  type: SolresolWorker.SolresolOutputType,
 ): ReactNode => {
   switch (type) {
     case 'full':
@@ -114,7 +117,10 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   const [input, setInput] = useState<string>('');
   const [hint, setHint] = useState<string>('');
   const [output, setOutput] = useState<SolresolWorker.TranslationOutput>([]);
-  const [outputType, setOutputType] = useState<SolresolOutputType>('full');
+  const [outputType, setOutputType] = useState<
+    SolresolWorker.SolresolOutputType
+  >('full');
+  const [swapped, setSwapped] = useState(false);
 
   const [debouncedInput] = useDebounce(input, 300);
 
@@ -126,17 +132,20 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
         return;
       }
 
-      const {
-        output: possibleOutput,
-        hint: possibleHint,
-      } = await computeOutput(debouncedInput);
+      const { output: possibleOutput, hint: possibleHint } = swapped
+        ? await computeEnglishOutput(debouncedInput)
+        : await computeSolresolOutput(debouncedInput);
 
       setOutput(possibleOutput);
       setHint(possibleHint !== debouncedInput ? possibleHint : '');
     };
 
     compute();
-  }, [debouncedInput]);
+  }, [debouncedInput, swapped]);
+
+  const handleSwapClick = useCallback(() => {
+    setSwapped((prev) => !prev);
+  }, []);
 
   const handleInput = useCallback<NonNullable<OutlinedInputProps['onInput']>>(
     (event) => {
@@ -159,14 +168,16 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
   const handleOutputTypeChange = useCallback<
     NonNullable<SelectProps['onChange']>
   >((event) => {
-    setOutputType(event.target.value as SolresolOutputType);
+    setOutputType(event.target.value as SolresolWorker.SolresolOutputType);
   }, []);
 
   const formatTranslation = useCallback<
     NonNullable<SolresolOutputProps['formatTranslation']>
-  >((word, classes) => convertToSolresolForm(word, classes, outputType), [
-    outputType,
-  ]);
+  >(
+    (word, classes) =>
+      swapped ? word : convertToSolresolForm(word, classes, outputType),
+    [outputType, swapped],
+  );
 
   return (
     <TopbarLayout title="Solresol" {...props}>
@@ -179,10 +190,17 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
                   <Box
                     display="flex"
                     alignItems="center"
+                    justifyContent="space-between"
                     marginBottom={1}
                     height={48}
                   >
                     <FormLabel>Input</FormLabel>
+                    <IconButton
+                      aria-label="swap languages"
+                      onClick={handleSwapClick}
+                    >
+                      <SwapHorizIcon />
+                    </IconButton>
                   </Box>
                   <OutlinedInput
                     multiline
@@ -219,31 +237,32 @@ const Solresol: FunctionComponent<TopbarLayoutProps> = (props) => {
                 height={48}
               >
                 <FormLabel>Output</FormLabel>
-                <FormControl>
-                  <InputLabel
-                    shrink
-                    id="demo-simple-select-placeholder-label-label"
-                  >
-                    Type
-                  </InputLabel>
-                  <Select
-                    native
-                    labelId="demo-simple-select-placeholder-label-label"
-                    id="demo-simple-select-placeholder-label"
-                    value={outputType}
-                    onChange={handleOutputTypeChange}
-                  >
-                    <option value="full">Full</option>
-                    <option value="abbreviated">Abbreviated</option>
-                    <option value="english">English</option>
-                    <option value="numeric">Numeric</option>
-                    <option value="color">Color</option>
-                    {/* <option value="stenographic">Stenographic</option> */}
-                  </Select>
-                </FormControl>
+                {!swapped && (
+                  <FormControl>
+                    <InputLabel
+                      shrink
+                      id="demo-simple-select-placeholder-label-label"
+                    >
+                      Type
+                    </InputLabel>
+                    <Select
+                      native
+                      labelId="demo-simple-select-placeholder-label-label"
+                      id="demo-simple-select-placeholder-label"
+                      value={outputType}
+                      onChange={handleOutputTypeChange}
+                    >
+                      <option value="full">Full</option>
+                      <option value="abbreviated">Abbreviated</option>
+                      <option value="english">English</option>
+                      <option value="numeric">Numeric</option>
+                      <option value="color">Color</option>
+                      {/* <option value="stenographic">Stenographic</option> */}
+                    </Select>
+                  </FormControl>
+                )}
               </Box>
               <SolresolOutput
-                type={outputType}
                 value={output}
                 onChange={handleOutputChange}
                 formatTranslation={formatTranslation}
