@@ -18,12 +18,17 @@ const fuse = new Fuse<{ solresol: string; english: string }>(
 );
 
 export interface TranslationOutputItem {
-  solresol: string;
-  english: string[];
+  word: string;
+  meanings: string[];
   preferred?: boolean;
 }
 
 export type TranslationOutput = (string | TranslationOutputItem[])[];
+
+export interface DictionaryItem {
+  solresol: string;
+  english: string[];
+}
 
 export const computeOutput = async (
   input: string,
@@ -44,7 +49,7 @@ export const computeOutput = async (
   ) {
     const [word] = matches;
 
-    const translations: TranslationOutputItem[] = solresolDictionary.filter(
+    const translations: DictionaryItem[] = solresolDictionary.filter(
       // TODO: remove this optional chaining when dictionary is completed
       ({ english }) => english?.includes(word.toLowerCase()),
     );
@@ -56,7 +61,13 @@ export const computeOutput = async (
           b.english.indexOf(word.toLowerCase()),
       );
 
-      const [preferredTranslation, ...otherTranslations] = sortedTranslations;
+      const [
+        preferredTranslation,
+        ...otherTranslations
+      ] = sortedTranslations.map(({ solresol: word, english: meanings }) => ({
+        word,
+        meanings,
+      }));
 
       output.push(
         input.slice(previousIndex, wordRegex.lastIndex - word.length),

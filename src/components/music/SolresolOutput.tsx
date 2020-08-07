@@ -156,7 +156,7 @@ const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
               className={classes.translation}
             >
               {formatTranslation(
-                part.find(({ preferred }) => preferred)?.solresol || '',
+                part.find(({ preferred }) => preferred)?.word || '',
                 classes,
               )}
             </button>
@@ -183,18 +183,18 @@ const SolresolOutput: FunctionComponent<SolresolOutputProps> = ({
         {value &&
           selectedTranslation &&
           (value[selectedTranslation.index] as TranslationOutputItem[]).map(
-            ({ solresol, english, preferred }, index) => (
+            ({ word, meanings, preferred }, index) => (
               <MenuItem
-                key={solresol}
+                key={word}
                 selected={preferred}
                 onClick={createTranslationPreferenceChangeHandler(index)}
               >
                 <div className={classes.alternative}>
                   <Typography variant="subtitle1">
-                    <strong>{formatTranslation(solresol, classes)}</strong>
+                    <strong>{formatTranslation(word, classes)}</strong>
                   </Typography>
                   <Typography variant="caption">
-                    {english.join(' · ')}
+                    {meanings.join(' · ')}
                   </Typography>
                 </div>
               </MenuItem>
