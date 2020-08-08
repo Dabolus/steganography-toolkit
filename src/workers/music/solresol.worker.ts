@@ -130,6 +130,7 @@ export const computeSolresolOutput = async (
 const inputTypeMap = {
   full: [undefined, 'do', 're', 'mi', 'fa', 'sol', 'la', 'si'],
   abbreviated: [undefined, 'd', 'r', 'm', 'f', 'so', 'l', 's'],
+  english: [undefined, 'C', 'D', 'E', 'F', 'G', 'A', 'B'],
 };
 
 const detectSolresolInputType = (
@@ -137,6 +138,10 @@ const detectSolresolInputType = (
 ): keyof typeof inputTypeMap | 'numeric' => {
   if (/^\s*\d/.test(input)) {
     return 'numeric';
+  }
+
+  if (/^\s*[CDEFGAB]/.test(input)) {
+    return 'english';
   }
 
   if (!/^\s*(?:do|re|mi|fa|sol|la|si)/i.test(input)) {
@@ -178,7 +183,7 @@ export const computeEnglishOutput = async (
                 .map((code) => inputTypeMap[inputType][code])
                 .join('');
 
-        return normalizedSolresol === word.toLowerCase();
+        return normalizedSolresol.toLowerCase() === word.toLowerCase();
       },
     );
 
