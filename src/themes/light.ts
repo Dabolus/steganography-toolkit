@@ -5,7 +5,7 @@ import { enUS } from '@material-ui/core/locale';
 const lightTheme = createMuiTheme(
   {
     typography: {
-      fontFamily: "'Jost*', sans-serif",
+      fontFamily: "'Jost', sans-serif",
       h1: {
         fontSize: '2rem',
         fontWeight: 800,
