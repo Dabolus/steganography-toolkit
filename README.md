@@ -1,3 +1,5 @@
+> ⚠️ **DEPRECATED:** This web app has been moved to my [Web Experiments monorepo](https://github.com/Dabolus/web-experiments/tree/main/src/experiments/steganography-toolkit)
+
 # Steganography Toolkit
 
 Steganography Toolkit is an app aimed to provide a fast and easy way to hide messages in either text,
